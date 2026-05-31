@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kivo Rides — User Requests</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
 <style>
 :root{--bg:#07101E;--s1:#0D1829;--s2:#152133;--s3:#1C2B42;--pr:#00D46A;--prd:#00A854;--prf:rgba(0,212,106,.12);--go:#FFB800;--gof:rgba(255,184,0,.12);--rd:#FF4757;--rdf:rgba(255,71,87,.12);--bl:#2196F3;--blf:rgba(33,150,243,.12);--pu:#8B5CF6;--puf:rgba(139,92,246,.12);--tx:#EDF2FF;--t2:#8896AE;--t3:#3E5170;--br:rgba(255,255,255,.065);--br2:rgba(255,255,255,.12);--r:10px;--rl:16px;--rx:20px;--sw:228px;--th:58px}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.55}
+body{font-family:'DM Sans','Inter',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.55;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 h1,h2,h3,.syn{font-family:'Syne',sans-serif}
 input,select,textarea,button{font-family:inherit}
 ::-webkit-scrollbar{width:5px;height:5px}
@@ -176,6 +176,14 @@ input,select,textarea,button{font-family:inherit}
 textarea.form-control{resize:vertical;min-height:100px;font-family:inherit}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .form-row.full{grid-template-columns:1fr}
+
+/* ── MOBILE SIDEBAR ── */
+@media(max-width:1024px){
+  .sidebar{position:fixed;left:-228px;top:0;bottom:0;z-index:180;width:228px}
+  .sidebar.show{left:0}
+  .sb-back{position:fixed;display:none;inset:0;background:rgba(0,0,0,.6);z-index:170}
+  .sb-back.show{display:block}
+}
 
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
@@ -1140,12 +1148,20 @@ function switchPage(pageId){
 // Sidebar & Navigation
 function toggleSidebar(){
   const sidebar = document.getElementById('sidebar');
-  const topbar = document.getElementById('topbar');
-  const main = document.querySelector('.main');
+  const sbBack = document.getElementById('sb-back');
   
-  sidebar.classList.toggle('collapsed');
-  topbar.classList.toggle('collapsed');
-  main.classList.toggle('collapsed');
+  // On mobile (< 1024px), toggle 'show' class
+  if(window.innerWidth < 1024){
+    sidebar.classList.toggle('show');
+    sbBack.classList.toggle('show');
+  } else {
+    // On desktop, toggle 'collapsed' class
+    const topbar = document.getElementById('topbar');
+    const main = document.querySelector('.main');
+    sidebar.classList.toggle('collapsed');
+    topbar.classList.toggle('collapsed');
+    main.classList.toggle('collapsed');
+  }
 }
 
 function toggleCollapseSidebar(){
