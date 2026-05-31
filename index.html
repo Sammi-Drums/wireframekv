@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kivo Rides — Taxi Booking System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+    <style>
+        :root {
+            --bg: #07101E;
+            --navy: #0A1628;
+            --dark-navy: #05090D;
+            --pr: #00D46A;
+            --prd: #00A854;
+            --tx: #EDF2FF;
+            --tx-muted: #8896AE;
+            --white: #FFFFFF;
+            --br: rgba(255, 255, 255, 0.065);
+            --br2: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            background: linear-gradient(135deg, var(--navy) 0%, var(--bg) 50%, var(--dark-navy) 100%);
+            color: var(--tx);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, .syn {
+            font-family: 'Syne', sans-serif;
+        }
+
+        /* ─────── BACKGROUND ANIMATED ELEMENTS ─────── */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .shape {
+            position: absolute;
+            opacity: 0.05;
+            animation: float 15s ease-in-out infinite;
+        }
+
+        .shape-1 {
+            width: 400px;
+            height: 400px;
+            background: var(--pr);
+            border-radius: 50%;
+            top: -100px;
+            left: -100px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 300px;
+            height: 300px;
+            background: var(--white);
+            border-radius: 50%;
+            bottom: -50px;
+            right: -50px;
+            animation: float 18s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0);
+            }
+            25% {
+                transform: translate(30px, -30px);
+            }
+            50% {
+                transform: translate(0, -60px);
+            }
+            75% {
+                transform: translate(-30px, -30px);
+            }
+        }
+
+        /* ─────── CONTAINER ─────── */
+        .container {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* ─────── HEADER ─────── */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--pr), var(--prd));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 28px;
+            color: var(--white);
+            box-shadow: 0 20px 40px rgba(0, 212, 106, 0.2);
+            animation: scaleIn 0.8s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .brand-name {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .brand-name h1 {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--tx);
+            margin: 0;
+        }
+
+        .brand-name span {
+            color: var(--pr);
+            font-weight: 800;
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: var(--tx-muted);
+            margin-top: 4px;
+        }
+
+        .title {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--white);
+            margin: 20px 0 15px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--tx-muted);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ─────── BUTTONS GRID ─────── */
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+            width: 100%;
+            max-width: 1000px;
+            animation: slideUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .card {
+            background: linear-gradient(135deg, rgba(13, 24, 41, 0.6), rgba(21, 33, 51, 0.6));
+            border: 1px solid var(--br2);
+            border-radius: 16px;
+            padding: 40px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.320, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .card:hover::before {
+            left: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--pr);
+            background: linear-gradient(135deg, rgba(13, 24, 41, 0.8), rgba(21, 33, 51, 0.8));
+            box-shadow: 0 20px 50px rgba(0, 212, 106, 0.15);
+        }
+
+        .card-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-admin .card-icon {
+            background: linear-gradient(135deg, rgba(0, 212, 106, 0.2), rgba(0, 168, 84, 0.2));
+            color: var(--pr);
+        }
+
+        .card-driver .card-icon {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            color: var(--white);
+        }
+
+        .card-user .card-icon {
+            background: linear-gradient(135deg, rgba(0, 212, 106, 0.15), rgba(0, 168, 84, 0.15));
+            color: var(--pr);
+        }
+
+        .card:hover .card-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .card-title {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--white);
+            margin: 20px 0 12px;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card:hover .card-title {
+            color: var(--pr);
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: var(--tx-muted);
+            line-height: 1.6;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-button {
+            background: var(--pr);
+            color: var(--white);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .card-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .card-button:hover {
+            background: var(--prd);
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 212, 106, 0.3);
+        }
+
+        .card-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .card-admin:hover .card-button {
+            background: var(--prd);
+        }
+
+        .card-driver:hover .card-button {
+            background: var(--pr);
+            color: #000;
+        }
+
+        .card-user:hover .card-button {
+            background: var(--prd);
+        }
+
+        /* ─────── RESPONSIVE ─────── */
+        @media (max-width: 1024px) {
+            .buttons-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+
+            .title {
+                font-size: 36px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .header {
+                margin-bottom: 40px;
+            }
+
+            .logo-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .brand-name {
+                align-items: center;
+            }
+
+            .brand-name h1 {
+                font-size: 28px;
+            }
+
+            .title {
+                font-size: 28px;
+                margin: 15px 0 10px;
+            }
+
+            .subtitle {
+                font-size: 15px;
+            }
+
+            .buttons-grid {
+                gap: 20px;
+                margin-top: 40px;
+            }
+
+            .card {
+                padding: 30px 20px;
+            }
+
+            .card-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+
+            .card-title {
+                font-size: 18px;
+                margin: 15px 0 10px;
+            }
+
+            .card-description {
+                font-size: 13px;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .brand-name h1 {
+                font-size: 24px;
+            }
+
+            .title {
+                font-size: 22px;
+                margin: 10px 0 8px;
+            }
+
+            .subtitle {
+                font-size: 14px;
+            }
+
+            .buttons-grid {
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            .card {
+                padding: 25px 15px;
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+                margin-bottom: 15px;
+            }
+
+            .card-title {
+                font-size: 16px;
+                margin: 12px 0 8px;
+            }
+
+            .card-description {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+
+            .card-button {
+                padding: 10px 20px;
+                font-size: 13px;
+            }
+        }
+
+        /* ─────── FOOTER ─────── */
+        .footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--tx-muted);
+            font-size: 13px;
+            border-top: 1px solid var(--br);
+            margin-top: auto;
+        }
+
+        .footer-link {
+            color: var(--pr);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--white);
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="bg-gradient">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">KR</div>
+                <div class="brand-name">
+                    <h1>Kivo<span>Rides</span></h1>
+                    <p class="tagline">Professional Taxi Booking</p>
+                </div>
+            </div>
+
+            <h1 class="title">Welcome to Kivo Rides</h1>
+            <p class="subtitle">Select your role to access the appropriate interface and start managing or booking rides</p>
+        </div>
+
+        <!-- Buttons Grid -->
+        <div class="buttons-grid">
+            <!-- Admin Card -->
+            <a href="kivo-rides-admin.html" class="card-link">
+                <div class="card card-admin">
+                    <div class="card-icon">
+                        <i class="ti ti-dashboard"></i>
+                    </div>
+                    <h2 class="card-title">Admin Dashboard</h2>
+                    <p class="card-description">Manage the entire system, view analytics, manage drivers and users</p>
+                    <button class="card-button">
+                        <span>Access Admin</span>
+                        <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </a>
+
+            <!-- Driver Card -->
+            <a href="kivo-rides-driver-app (2).html" class="card-link">
+                <div class="card card-driver">
+                    <div class="card-icon">
+                        <i class="ti ti-steering-wheel"></i>
+                    </div>
+                    <h2 class="card-title">Driver App</h2>
+                    <p class="card-description">Accept rides, track location, manage your schedule and earnings</p>
+                    <button class="card-button">
+                        <span>Driver Access</span>
+                        <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </a>
+
+            <!-- User Card -->
+            <a href="kivo-rides-user.html" class="card-link">
+                <div class="card card-user">
+                    <div class="card-icon">
+                        <i class="ti ti-users"></i>
+                    </div>
+                    <h2 class="card-title">User Interface</h2>
+                    <p class="card-description">Book rides, track your journey, and manage your rides in real-time</p>
+                    <button class="card-button">
+                        <span>Book a Ride</span>
+                        <i class="ti ti-arrow-right"></i>
+                    </button>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 <span class="footer-link">Kivo Rides</span>. All rights reserved. | <a href="#" class="footer-link">Privacy Policy</a> | <a href="#" class="footer-link">Terms of Service</a></p>
+    </footer>
+</body>
+</html>

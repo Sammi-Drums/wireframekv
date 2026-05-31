@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Kivo Rides — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#07101E;--s1:#0D1829;--s2:#152133;--s3:#1C2B42;--pr:#00D46A;--prd:#00A854;--prf:rgba(0,212,106,.12);--go:#FFB800;--gof:rgba(255,184,0,.12);--rd:#FF4757;--rdf:rgba(255,71,87,.12);--bl:#2196F3;--blf:rgba(33,150,243,.12);--pu:#8B5CF6;--puf:rgba(139,92,246,.12);--tx:#EDF2FF;--t2:#8896AE;--t3:#3E5170;--br:rgba(255,255,255,.065);--br2:rgba(255,255,255,.12);--r:10px;--rl:16px;--rx:20px;--sw:228px;--th:58px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.55}
+h1,h2,h3,.syn{font-family:'Syne',sans-serif}
+input,select,textarea,button{font-family:inherit}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--t3);border-radius:10px}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:var(--sw);right:0;height:var(--th);background:var(--s1);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 24px;gap:14px;z-index:100;transition:left .3s}
+.ham{display:none;background:none;border:none;color:var(--t2);font-size:22px;cursor:pointer;padding:4px;line-height:1}
+#pg-label{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;white-space:nowrap;color:var(--tx)}
+.tsrch{flex:1;max-width:300px;display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:8px 14px}
+.tsrch .ti{color:var(--t3);font-size:16px;flex-shrink:0}
+.tsrch input{background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:100%}
+.tsrch input::placeholder{color:var(--t3)}
+.tact{display:flex;align-items:center;gap:10px;margin-left:auto}
+.tnotif{position:relative;width:36px;height:36px;border:1px solid var(--br);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:18px;background:none;transition:all .15s}
+.tnotif:hover{background:var(--s2);color:var(--tx)}
+.ndot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--rd);border-radius:50%;border:2px solid var(--s1)}
+.tav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#000;cursor:pointer;flex-shrink:0}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);background:var(--s1);border-right:1px solid var(--br);position:fixed;top:0;left:0;bottom:0;z-index:200;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;transition:left .3s,width .3s}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:18px 16px 16px;border-bottom:1px solid var(--br);flex-shrink:0;overflow:hidden}
+.sb-logo{width:36px;height:36px;background:var(--pr);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#000;flex-shrink:0;letter-spacing:-.5px}
+.sb-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden}
+.sb-title span{color:var(--pr)}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.slbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:10px 10px 4px;white-space:nowrap;overflow:hidden}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:var(--t2);cursor:pointer;transition:all .15s;margin-bottom:1px;white-space:nowrap;position:relative}
+.ni:hover{background:var(--s2);color:var(--tx)}
+.ni.on{background:var(--prf);color:var(--pr);font-weight:500}
+.ni>.ti{font-size:17px;flex-shrink:0}
+.ni-lbl{flex:1;overflow:hidden}
+.ni-end{margin-left:auto;flex-shrink:0}
+.ni-ct{background:var(--rd);color:#fff;font-size:10px;font-weight:700;border-radius:100px;padding:1px 7px}
+.ni-dot{width:6px;height:6px;background:var(--pr);border-radius:50%}
+.sb-foot{border-top:1px solid var(--br);padding:12px 10px;flex-shrink:0}
+.ap{display:flex;align-items:center;gap:9px;background:var(--s2);border-radius:9px;padding:10px;overflow:hidden}
+.ap-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#000;flex-shrink:0}
+.ap-name{font-size:13px;font-weight:500;white-space:nowrap}
+.ap-role{font-size:11px;color:var(--t2);white-space:nowrap}
+.sb-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);padding-top:var(--th);min-height:100vh;transition:margin-left .3s}
+.page{display:none;padding:26px 28px}
+.page.active{display:block}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+.ph h1{font-size:22px;font-weight:800}
+.ph-sub{font-size:13px;color:var(--t2);margin-top:3px}
+.ph-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1}
+.btn-o{background:transparent;border:1px solid var(--br2);color:var(--t2)}
+.btn-o:hover{background:var(--s2);color:var(--tx)}
+.btn-p{background:var(--pr);color:#000;font-weight:600}
+.btn-p:hover{background:var(--prd)}
+.btn-r{background:var(--rdf);color:var(--rd);border:1px solid rgba(255,71,87,.25)}
+.btn-r:hover{background:rgba(255,71,87,.22)}
+.btn-y{background:var(--gof);color:var(--go);border:1px solid rgba(255,184,0,.25)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11.5px;border-radius:7px}
+.btn-icon{width:32px;height:32px;padding:0;justify-content:center}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:22px}
+.sc{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:18px 20px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rl) var(--rl) 0 0}
+.cg::before{background:var(--pr)}.cy::before{background:var(--go)}.cb::before{background:var(--bl)}.cr::before{background:var(--rd)}.cp::before{background:var(--pu)}
+.si{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.sig{background:var(--prf);color:var(--pr)}.siy{background:var(--gof);color:var(--go)}.sib{background:var(--blf);color:var(--bl)}.sir{background:var(--rdf);color:var(--rd)}.sip{background:var(--puf);color:var(--pu)}
+.sv{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;margin-bottom:3px}
+.sl{font-size:12.5px;color:var(--t2)}
+.sch{font-size:11.5px;font-weight:500;margin-top:7px}
+.up{color:var(--pr)}.dn{color:var(--rd)}.nt{color:var(--t2)}
+
+/* ── CARD ── */
+.card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:20px}
+.ch{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.ct{font-size:14.5px;font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--s2);border:1px solid var(--br);border-radius:100px;padding:4px 12px;font-size:12px;color:var(--t2);cursor:pointer;transition:all .15s}
+.chip.on{background:var(--prf);color:var(--pr);border-color:rgba(0,212,106,.35)}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;white-space:nowrap}
+thead th{text-align:left;padding:9px 14px;color:var(--t3);font-weight:500;font-size:11px;letter-spacing:.05em;text-transform:uppercase;border-bottom:1px solid var(--br)}
+tbody tr{border-bottom:1px solid var(--br);transition:background .1s;cursor:pointer}
+tbody tr:hover{background:var(--s2)}
+tbody tr:last-child{border-bottom:none}
+tbody td{padding:11px 14px}
+td.m{color:var(--t2)}
+.dc{display:flex;align-items:center;gap:8px}
+.avsm{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+
+/* ── BADGES ── */
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;white-space:nowrap}
+.bdg::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.bok{background:rgba(0,212,106,.15);color:var(--pr)}
+.bgo{background:rgba(33,150,243,.15);color:var(--bl)}
+.bcn{background:rgba(255,71,87,.15);color:var(--rd)}
+.bwt{background:rgba(255,184,0,.15);color:var(--go)}
+.bpu{background:rgba(139,92,246,.15);color:var(--pu)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:8px;font-size:12px;background:var(--s2);color:var(--t2)}
+
+/* ── FORM ── */
+.fg{display:flex;flex-direction:column;gap:5px}
+.fg label{font-size:12px;color:var(--t2);font-weight:500}
+.req{color:var(--rd)}
+.finput{background:var(--s2);border:1px solid var(--br2);border-radius:9px;padding:10px 14px;color:var(--tx);font-size:13.5px;width:100%;outline:none;transition:border-color .15s}
+.finput:focus{border-color:var(--pr)}
+.finput::placeholder{color:var(--t3)}
+select.finput{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath stroke='%238896AE' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' fill='none' d='M4 6l4 4 4-4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:34px}
+select.finput option{background:var(--s2)}
+textarea.finput{resize:vertical;min-height:80px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fspan{grid-column:1/-1}
+
+/* Photo upload */
+.photo-up{border:1.5px dashed var(--br2);border-radius:var(--r);padding:22px;text-align:center;cursor:pointer;transition:border-color .15s;position:relative;background:var(--s2)}
+.photo-up:hover{border-color:var(--pr)}
+.photo-up .ti{font-size:30px;color:var(--t3);display:block;margin-bottom:8px}
+.photo-up p{font-size:13px;color:var(--t2);margin-bottom:3px}
+.photo-up small{font-size:11px;color:var(--t3)}
+.photo-up input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+/* Vehicle type selector */
+.vt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.vt-card{border:1.5px solid var(--br);border-radius:var(--r);padding:14px 8px;text-align:center;cursor:pointer;transition:all .15s;background:var(--s2)}
+.vt-card:hover{border-color:var(--br2)}
+.vt-card.sel{border-color:var(--pr);background:var(--prf)}
+.vt-card input{display:none}
+.vti{font-size:26px;margin-bottom:5px}
+.vtn{font-size:12.5px;font-weight:600}
+
+/* Toggle switch */
+.tgl{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--br)}
+.tgl:last-child{border-bottom:none}
+.tgl-ttl{font-size:13.5px;font-weight:500}
+.tgl-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.sw{position:relative;width:42px;height:23px;flex-shrink:0;cursor:pointer}
+.sw input{opacity:0;width:0;height:0;position:absolute}
+.sw-t{position:absolute;inset:0;background:var(--s3);border-radius:100px;transition:background .2s}
+.sw input:checked+.sw-t{background:var(--pr)}
+.sw-k{position:absolute;top:2px;left:2px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;pointer-events:none}
+.sw input:checked~.sw-k{left:21px}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto;backdrop-filter:blur(4px)}
+.modal-bg.open{display:flex}
+.modal{background:var(--s1);border:1px solid var(--br2);border-radius:var(--rx);width:100%;max-width:600px;animation:mslide .25s ease;position:relative;margin:auto}
+.modal-lg{max-width:700px}
+@keyframes mslide{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}
+.mh{display:flex;align-items:flex-start;justify-content:space-between;padding:22px 24px 18px;border-bottom:1px solid var(--br)}
+.mh-l h2{font-size:17px;font-weight:700}
+.mh-l p{font-size:12px;color:var(--t2);margin-top:2px}
+.mx{width:32px;height:32px;border:1px solid var(--br);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:18px;background:none;transition:all .15s;flex-shrink:0;margin-left:12px}
+.mx:hover{background:var(--s2);color:var(--tx)}
+.mb{padding:20px 24px}
+.mf{padding:16px 24px 22px;border-top:1px solid var(--br);display:flex;justify-content:flex-end;gap:10px}
+.trip-detail-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.td-item{background:var(--s2);border-radius:9px;padding:12px 14px}
+.td-lbl{font-size:11px;color:var(--t2);margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.td-val{font-size:14px;font-weight:500}
+
+/* ── GRID ROW ── */
+.row2{display:grid;grid-template-columns:1fr 360px;gap:20px;margin-bottom:20px}
+
+/* ── DRIVER CARDS ── */
+.drv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px}
+.drv-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:20px;transition:border-color .15s}
+.drv-card:hover{border-color:var(--br2)}
+.dc-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.dc-av{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0}
+.dc-name{font-size:14.5px;font-weight:600;line-height:1.3}
+.dc-phone{font-size:12px;color:var(--t2);margin-top:2px}
+.dc-veh{font-size:12px;background:var(--s2);border-radius:7px;padding:8px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--t2)}
+.dc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;text-align:center}
+.dc-sv{font-size:15px;font-weight:700}
+.dc-sl{font-size:10px;color:var(--t2);margin-top:1px}
+.dc-act{display:flex;gap:8px}
+
+/* ── ZONE CARDS ── */
+.zone-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.zone-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:18px}
+.zc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.zc-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.zc-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.zc-type{font-size:11.5px;color:var(--t2)}
+.zc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.zc-stat{background:var(--s2);border-radius:8px;padding:8px 10px;text-align:center}
+.zc-sv{font-size:14px;font-weight:700}
+.zc-sl{font-size:10px;color:var(--t2);margin-top:1px}
+.zc-act{display:flex;gap:8px;margin-top:12px;align-items:center;justify-content:space-between}
+
+/* ── PROMO CARDS ── */
+.promo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.promo-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:18px}
+.pc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.pc-code{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:.04em}
+.pc-val{font-size:13px;font-weight:600;color:var(--go)}
+.pc-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.pc-m{background:var(--s2);border-radius:7px;padding:8px 10px}
+.pc-ml{font-size:10px;color:var(--t2);margin-bottom:2px}
+.pc-mv{font-size:13px;font-weight:600}
+.pc-bar-wrap{background:var(--s2);border-radius:100px;height:5px;margin:6px 0 14px;overflow:hidden}
+.pc-bar{height:100%;border-radius:100px;background:var(--pr)}
+.pc-act{display:flex;gap:8px}
+
+/* ── SETTINGS ── */
+.set-tabs{display:flex;border-bottom:1px solid var(--br);margin-bottom:22px;overflow-x:auto}
+.set-tab{padding:10px 18px;cursor:pointer;font-size:13.5px;color:var(--t2);border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none}
+.set-tab.on{color:var(--pr);border-bottom-color:var(--pr)}
+.set-sec{display:none}
+.set-sec.on{display:block}
+.set-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:20px;margin-bottom:16px}
+.set-card h3{font-size:14px;font-weight:600;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--br)}
+.price-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--br);gap:12px}
+.price-row:last-child{border-bottom:none}
+.p-lbl{font-size:13.5px;font-weight:500}
+.p-sub{font-size:12px;color:var(--t2);margin-top:2px}
+.p-inp{background:var(--s2);border:1px solid var(--br2);border-radius:7px;padding:7px 10px;width:100px;color:var(--tx);font-size:13px;outline:none;text-align:right;transition:border-color .15s}
+.p-inp:focus{border-color:var(--pr)}
+
+/* ── ALERTS ── */
+.alert{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:var(--r);margin-bottom:20px}
+.a-info{background:var(--blf);border:1px solid rgba(33,150,243,.25);color:var(--bl)}
+.a-warn{background:var(--gof);border:1px solid rgba(255,184,0,.25);color:var(--go)}
+.a-succ{background:var(--prf);border:1px solid rgba(0,212,106,.25);color:var(--pr)}
+.a-err{background:var(--rdf);border:1px solid rgba(255,71,87,.25);color:var(--rd)}
+
+/* ── SEARCH BAR ── */
+.ps-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.psrch{display:flex;align-items:center;gap:8px;background:var(--s1);border:1px solid var(--br);border-radius:9px;padding:8px 14px;flex:1;min-width:160px}
+.psrch .ti{color:var(--t3);font-size:16px;flex-shrink:0}
+.psrch input{background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:100%}
+.psrch input::placeholder{color:var(--t3)}
+.flt-sel{background:var(--s1);border:1px solid var(--br);border-radius:9px;padding:8px 30px 8px 12px;color:var(--t2);font-size:13px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath stroke='%238896AE' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' fill='none' d='M4 6l4 4 4-4'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 8px center;background-size:14px;outline:none}
+.flt-sel option{background:var(--s2)}
+
+/* ── STATUS TABS ── */
+.stabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.stab{padding:7px 16px;border-radius:100px;font-size:13px;color:var(--t2);background:var(--s1);border:1px solid var(--br);cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.stab.on{background:var(--prf);color:var(--pr);border-color:rgba(0,212,106,.35)}
+.stab-ct{background:var(--s2);border-radius:100px;padding:1px 7px;font-size:11px}
+.stab.on .stab-ct{background:rgba(0,212,106,.2)}
+
+/* ── REVENUE ── */
+.rev-hero{background:linear-gradient(135deg,rgba(0,212,106,.1),rgba(0,168,84,.04));border:1px solid rgba(0,212,106,.2);border-radius:var(--rl);padding:24px;margin-bottom:20px}
+.rev-big{font-family:'Syne',sans-serif;font-size:38px;font-weight:800;color:var(--pr);line-height:1;margin:8px 0 6px}
+.rev-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:20px}
+.rev-mini{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px}
+.rm-val{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:2px}
+.rm-lbl{font-size:12px;color:var(--t2)}
+.rm-chg{font-size:11.5px;font-weight:500;margin-top:5px}
+
+/* ── MAP ── */
+.mapbox{background:var(--s2);border-radius:var(--r);overflow:hidden;height:215px}
+
+/* ── PAYOUT ── */
+.pay-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.pay-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px}
+.pay-v{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:3px}
+.pay-l{font-size:12px;color:var(--t2)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--pr);color:#000;font-weight:600;font-size:13px;padding:12px 20px;border-radius:10px;z-index:2000;animation:tslide .3s ease;box-shadow:0 8px 24px rgba(0,212,106,.35);display:flex;align-items:center;gap:8px}
+@keyframes tslide{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .row2{grid-template-columns:1fr}
+  .rev-row{grid-template-columns:1fr 1fr}
+}
+@media(max-width:900px){
+  :root{--sw:64px}
+  .sb-title,.slbl,.ni-lbl,.ap-name,.ap-role{display:none!important}
+  .ni{justify-content:center;padding:10px}
+  .ni>.ni-end{display:none}
+  .sb-brand{justify-content:center;padding:14px 10px}
+  .sb-foot{padding:10px}
+  .ap{justify-content:center}
+}
+@media(max-width:640px){
+  :root{--sw:0px}
+  .sidebar{left:-280px;width:280px!important}
+  .sidebar.mob-open{left:0}
+  .sidebar.mob-open .sb-title,.sidebar.mob-open .slbl,.sidebar.mob-open .ni-lbl,.sidebar.mob-open .ap-name,.sidebar.mob-open .ap-role{display:block!important}
+  .sidebar.mob-open .ni{justify-content:flex-start;padding:9px 10px}
+  .sidebar.mob-open .ni>.ni-end{display:flex}
+  .sidebar.mob-open .sb-brand{justify-content:flex-start;padding:18px 16px 16px}
+  .sidebar.mob-open .sb-foot{padding:12px 10px}
+  .sidebar.mob-open .ap{justify-content:flex-start}
+  .sb-back.open{display:block!important}
+  .topbar{left:0}
+  .ham{display:block}
+  .tsrch{display:none}
+  .page{padding:14px 14px}
+  .sg{grid-template-columns:1fr 1fr}
+  .drv-grid,.promo-grid{grid-template-columns:1fr}
+  .zone-grid{grid-template-columns:1fr 1fr}
+  .fgrid{grid-template-columns:1fr}
+  .fspan{grid-column:1}
+  .rev-row{grid-template-columns:1fr 1fr}
+  .trip-detail-row{grid-template-columns:1fr}
+  .pay-sum{grid-template-columns:1fr 1fr}
+  .modal-bg{padding:14px 10px}
+  .mb{padding:16px 18px}
+  .mh{padding:18px 18px 14px}
+  .mf{padding:14px 18px 18px}
+}
+@media(max-width:400px){
+  .sg,.rev-row,.zone-grid,.pay-sum{grid-template-columns:1fr}
+  .vt-grid{grid-template-columns:1fr 1fr 1fr}
+  .stabs{gap:4px}
+  .stab{padding:6px 12px;font-size:12px}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sb-back" id="sb-back" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">KR</div>
+    <div class="sb-title">Kivo <span>Rides</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="slbl">Main</div>
+    <div class="ni on" onclick="showPage('dashboard',this)" title="Dashboard">
+      <i class="ti ti-layout-dashboard"></i><span class="ni-lbl">Dashboard</span>
+      <span class="ni-end ni-dot"></span>
+    </div>
+    <div class="ni" onclick="showPage('trips',this)" title="Trips">
+      <i class="ti ti-car"></i><span class="ni-lbl">Trips</span>
+      <span class="ni-end ni-ct">12</span>
+    </div>
+    <div class="ni" onclick="showPage('users',this)" title="Users">
+      <i class="ti ti-users"></i><span class="ni-lbl">Users</span>
+    </div>
+    <div class="ni" onclick="showPage('drivers',this)" title="Drivers">
+      <i class="ti ti-steering-wheel"></i><span class="ni-lbl">Drivers</span>
+    </div>
+    <div class="slbl">Finance</div>
+    <div class="ni" onclick="showPage('revenue',this)" title="Revenue">
+      <i class="ti ti-chart-area-line"></i><span class="ni-lbl">Revenue</span>
+    </div>
+    <div class="ni" onclick="showPage('transactions',this)" title="Transactions">
+      <i class="ti ti-receipt"></i><span class="ni-lbl">Transactions</span>
+    </div>
+    <div class="ni" onclick="showPage('payouts',this)" title="Payouts">
+      <i class="ti ti-cash"></i><span class="ni-lbl">Payouts</span>
+      <span class="ni-end ni-ct">5</span>
+    </div>
+    <div class="slbl">Configuration</div>
+    <div class="ni" onclick="showPage('zones',this)" title="Zones">
+      <i class="ti ti-map-pin"></i><span class="ni-lbl">Zones</span>
+    </div>
+    <div class="ni" onclick="showPage('promos',this)" title="Promos">
+      <i class="ti ti-discount"></i><span class="ni-lbl">Promos</span>
+    </div>
+    <div class="ni" onclick="showPage('settings',this)" title="Settings">
+      <i class="ti ti-settings"></i><span class="ni-lbl">Settings</span>
+    </div>
+  </nav>
+  <div class="sb-foot">
+    <div class="ap">
+      <div class="ap-av">AM</div>
+      <div><div class="ap-name">Achille Mbella</div><div class="ap-role">Super Admin</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <button class="ham" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+  <div id="pg-label">Dashboard</div>
+  <div class="tsrch"><i class="ti ti-search"></i><input type="text" placeholder="Search trips, drivers, users…"></div>
+  <div class="tact">
+    <button class="tnotif"><i class="ti ti-bell"></i><span class="ndot"></span></button>
+    <div class="tav" title="Achille Mbella">AM</div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<section class="page active" id="page-dashboard">
+  <div class="ph">
+    <div><h1>Dashboard</h1><div class="ph-sub">Thursday, 14 May 2026 · Douala, Cameroon</div></div>
+    <div class="ph-r">
+      <button class="btn btn-o"><i class="ti ti-download"></i> Export Report</button>
+      <button class="btn btn-p" onclick="openModal('m-add-driver')"><i class="ti ti-plus"></i> Add Driver</button>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc cg"><div class="si sig"><i class="ti ti-car"></i></div><div class="sv">1,284</div><div class="sl">Total Rides Today</div><div class="sch up">↑ 14% vs yesterday</div></div>
+    <div class="sc cy"><div class="si siy"><i class="ti ti-steering-wheel"></i></div><div class="sv">347</div><div class="sl">Active Drivers</div><div class="sch up">28 online now</div></div>
+    <div class="sc cb"><div class="si sib"><i class="ti ti-users"></i></div><div class="sv">8,941</div><div class="sl">Registered Users</div><div class="sch up">↑ 63 new today</div></div>
+    <div class="sc cr"><div class="si sir"><i class="ti ti-coin"></i></div><div class="sv">4.2M</div><div class="sl">Revenue (FCFA)</div><div class="sch up">↑ 8.3% this week</div></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="ch">
+        <div class="ct">Revenue Overview</div>
+        <div class="chips">
+          <span class="chip on" onclick="chipSelect(this,'dash-period')">7D</span>
+          <span class="chip" onclick="chipSelect(this,'dash-period')">30D</span>
+          <span class="chip" onclick="chipSelect(this,'dash-period')">90D</span>
+        </div>
+      </div>
+      <canvas id="dash-chart" height="195"></canvas>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Live Driver Map</div><span class="chip on" style="pointer-events:none">Douala</span></div>
+      <div class="mapbox">
+        <svg width="100%" height="215" viewBox="0 0 320 215">
+          <rect width="320" height="215" fill="#0C1C35"/>
+          <line x1="0" y1="107" x2="320" y2="107" stroke="#1A3356" stroke-width="4"/><line x1="160" y1="0" x2="160" y2="215" stroke="#1A3356" stroke-width="3"/>
+          <line x1="0" y1="68" x2="220" y2="155" stroke="#152B48" stroke-width="2"/><line x1="70" y1="0" x2="250" y2="215" stroke="#152B48" stroke-width="2"/>
+          <line x1="0" y1="152" x2="320" y2="88" stroke="#1A3356" stroke-width="2"/><line x1="40" y1="0" x2="40" y2="215" stroke="#122440" stroke-width="1.5"/><line x1="280" y1="0" x2="280" y2="215" stroke="#122440" stroke-width="1.5"/>
+          <ellipse cx="285" cy="180" rx="44" ry="30" fill="#0A1C38"/>
+          <line x1="120" y1="93" x2="175" y2="126" stroke="#00D46A" stroke-width="2" stroke-dasharray="5 4" opacity=".7"/>
+          <g style="animation:dp 2s ease-in-out infinite"><circle cx="120" cy="93" r="5" fill="#00D46A"/><circle cx="120" cy="93" r="11" fill="#00D46A" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite .6s"><circle cx="175" cy="126" r="5" fill="#00D46A"/><circle cx="175" cy="126" r="11" fill="#00D46A" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite .3s"><circle cx="82" cy="143" r="5" fill="#00D46A"/><circle cx="82" cy="143" r="11" fill="#00D46A" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite 1s"><circle cx="224" cy="80" r="5" fill="#00D46A"/><circle cx="224" cy="80" r="11" fill="#00D46A" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite .8s"><circle cx="148" cy="60" r="5" fill="#FFB800"/><circle cx="148" cy="60" r="11" fill="#FFB800" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite 1.4s"><circle cx="255" cy="152" r="4" fill="#FFB800"/><circle cx="255" cy="152" r="9" fill="#FFB800" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite .5s"><circle cx="56" cy="73" r="4" fill="#2196F3"/><circle cx="56" cy="73" r="9" fill="#2196F3" opacity=".25"/></g>
+          <g style="animation:dp 2s ease-in-out infinite 1.2s"><circle cx="194" cy="44" r="4" fill="#2196F3"/><circle cx="194" cy="44" r="9" fill="#2196F3" opacity=".25"/></g>
+          <circle cx="10" cy="204" r="4" fill="#00D46A"/><text x="18" y="208" font-size="9" fill="rgba(255,255,255,.45)" font-family="DM Sans,sans-serif">Online</text>
+          <circle cx="70" cy="204" r="4" fill="#FFB800"/><text x="78" y="208" font-size="9" fill="rgba(255,255,255,.45)" font-family="DM Sans,sans-serif">On Trip</text>
+          <circle cx="130" cy="204" r="4" fill="#2196F3"/><text x="138" y="208" font-size="9" fill="rgba(255,255,255,.45)" font-family="DM Sans,sans-serif">Idle</text>
+        </svg>
+      </div>
+      <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--t2)"><b style="color:var(--pr)">284</b> Online</span>
+        <span style="font-size:12px;color:var(--t2)"><b style="color:var(--go)">63</b> On Trip</span>
+        <span style="font-size:12px;color:var(--t2)"><b style="color:var(--bl)">32</b> Idle</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Recent Trips</div><button class="btn btn-o btn-sm" onclick="showPage('trips',document.querySelector('[onclick*=trips]'))">View All <i class="ti ti-arrow-right"></i></button></div>
+    <div class="tw"><table>
+      <thead><tr><th>Trip ID</th><th>Passenger</th><th>Driver</th><th>Type</th><th>Route</th><th>Fare (FCFA)</th><th>Status</th><th>Time</th></tr></thead>
+      <tbody>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8821</td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">AM</div>Armel M.</div></td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">EK</div>Etienne K.</div></td><td><span class="pill">🏍 Moto</span></td><td class="m">Akwa → Bonaberi</td><td><b>1,200</b></td><td><span class="bdg bok">Completed</span></td><td class="m">14:32</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8820</td><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">NC</div>Nathalie C.</div></td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">PB</div>Paul B.</div></td><td><span class="pill">🚗 Car</span></td><td class="m">Bonamoussadi → Aéroport</td><td><b>3,500</b></td><td><span class="bdg bgo">Ongoing</span></td><td class="m">14:28</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8819</td><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">JT</div>Jean T.</div></td><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">SN</div>Sylvie N.</div></td><td><span class="pill">🚌 Minibus</span></td><td class="m">Deido → Ndokoti</td><td><b>500</b></td><td><span class="bdg bcn">Cancelled</span></td><td class="m">14:15</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8818</td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">BF</div>Brigitte F.</div></td><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">DM</div>David M.</div></td><td><span class="pill">🏍 Moto</span></td><td class="m">Makepe → Ange Raphael</td><td><b>800</b></td><td><span class="bdg bok">Completed</span></td><td class="m">14:08</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8817</td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">CR</div>Christelle R.</div></td><td class="m">—</td><td><span class="pill">🚗 Car</span></td><td class="m">Bali → Logbaba</td><td><b>2,800</b></td><td><span class="bdg bwt">Waiting</span></td><td class="m">14:05</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ══════════════ TRIPS ══════════════ -->
+<section class="page" id="page-trips">
+  <div class="ph">
+    <div><h1>Trips</h1><div class="ph-sub">All ride requests and completed journeys</div></div>
+    <div class="ph-r">
+      <button class="btn btn-o"><i class="ti ti-download"></i> Export</button>
+    </div>
+  </div>
+  <div class="stabs">
+    <span class="stab on" onclick="stab(this,'trips-status')">All <span class="stab-ct">1,284</span></span>
+    <span class="stab" onclick="stab(this,'trips-status')">Ongoing <span class="stab-ct">63</span></span>
+    <span class="stab" onclick="stab(this,'trips-status')">Completed <span class="stab-ct">1,098</span></span>
+    <span class="stab" onclick="stab(this,'trips-status')">Cancelled <span class="stab-ct">87</span></span>
+    <span class="stab" onclick="stab(this,'trips-status')">Waiting <span class="stab-ct">36</span></span>
+  </div>
+  <div class="ps-row">
+    <div class="psrch"><i class="ti ti-search"></i><input type="text" placeholder="Search by ID, passenger, driver…"></div>
+    <select class="flt-sel"><option>All Types</option><option>🏍 Moto</option><option>🚗 Car</option><option>🚌 Minibus</option></select>
+    <select class="flt-sel"><option>All Cities</option><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option></select>
+  </div>
+  <div class="card">
+    <div class="tw"><table>
+      <thead><tr><th>Trip ID</th><th>Passenger</th><th>Driver</th><th>Type</th><th>Pickup</th><th>Drop-off</th><th>Dist.</th><th>Fare</th><th>Payment</th><th>Status</th><th>Date & Time</th></tr></thead>
+      <tbody>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8821</td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">AM</div>Armel M.</div></td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">EK</div>Etienne K.</div></td><td><span class="pill">🏍 Moto</span></td><td class="m">Akwa Centre</td><td class="m">Bonaberi</td><td class="m">4.2 km</td><td><b>1,200</b></td><td class="m">MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May · 14:32</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8820</td><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">NC</div>Nathalie C.</div></td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">PB</div>Paul B.</div></td><td><span class="pill">🚗 Car</span></td><td class="m">Bonamoussadi</td><td class="m">Aéroport IBA</td><td class="m">12.8 km</td><td><b>3,500</b></td><td class="m">Orange Money</td><td><span class="bdg bgo">Ongoing</span></td><td class="m">14 May · 14:28</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8819</td><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">JT</div>Jean T.</div></td><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">SN</div>Sylvie N.</div></td><td><span class="pill">🚌 Minibus</span></td><td class="m">Deido</td><td class="m">Ndokoti</td><td class="m">2.1 km</td><td><b>500</b></td><td class="m">Cash</td><td><span class="bdg bcn">Cancelled</span></td><td class="m">14 May · 14:15</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8818</td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">BF</div>Brigitte F.</div></td><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">DM</div>David M.</div></td><td><span class="pill">🏍 Moto</span></td><td class="m">Makepe</td><td class="m">Ange Raphael</td><td class="m">3.0 km</td><td><b>800</b></td><td class="m">MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May · 14:08</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8817</td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">CR</div>Christelle R.</div></td><td class="m">Unassigned</td><td><span class="pill">🚗 Car</span></td><td class="m">Bali</td><td class="m">Logbaba</td><td class="m">6.4 km</td><td><b>2,800</b></td><td class="m">Orange Money</td><td><span class="bdg bwt">Waiting</span></td><td class="m">14 May · 14:05</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8816</td><td><div class="dc"><div class="avsm" style="background:var(--puf);color:var(--pu)">FK</div>Félix K.</div></td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">RN</div>Robert N.</div></td><td><span class="pill">🏍 Moto</span></td><td class="m">Bassa</td><td class="m">Douala Port</td><td class="m">5.7 km</td><td><b>1,400</b></td><td class="m">MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May · 13:50</td></tr>
+        <tr onclick="openModal('m-trip-detail')"><td class="m">#TR-8815</td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">MF</div>Marie F.</div></td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">AN</div>Aimé N.</div></td><td><span class="pill">🚗 Car</span></td><td class="m">Bonapriso</td><td class="m">Bonanjo</td><td class="m">3.2 km</td><td><b>2,200</b></td><td class="m">Cash</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May · 13:44</td></tr>
+      </tbody>
+    </table></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px">
+      <span style="font-size:13px;color:var(--t2)">Showing 7 of 1,284 trips</span>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-o btn-sm">← Prev</button>
+        <button class="btn btn-o btn-sm" style="background:var(--prf);color:var(--pr);border-color:rgba(0,212,106,.35)">1</button>
+        <button class="btn btn-o btn-sm">2</button><button class="btn btn-o btn-sm">3</button><button class="btn btn-o btn-sm">… 18</button>
+        <button class="btn btn-o btn-sm">Next →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ USERS ══════════════ -->
+<section class="page" id="page-users">
+  <div class="ph">
+    <div><h1>Users</h1><div class="ph-sub">Registered passengers on the platform</div></div>
+    <div class="ph-r"><button class="btn btn-p" onclick="openModal('m-add-user')"><i class="ti ti-user-plus"></i> Add User</button></div>
+  </div>
+  <div class="sg">
+    <div class="sc cg"><div class="si sig"><i class="ti ti-users"></i></div><div class="sv">8,941</div><div class="sl">Total Users</div><div class="sch up">↑ 63 today</div></div>
+    <div class="sc cy"><div class="si siy"><i class="ti ti-user-check"></i></div><div class="sv">2,341</div><div class="sl">Active Today</div><div class="sch nt">Last 24 hours</div></div>
+    <div class="sc cb"><div class="si sib"><i class="ti ti-star"></i></div><div class="sv">4.6</div><div class="sl">Avg. User Rating</div><div class="sch up">↑ 0.1 this month</div></div>
+    <div class="sc cr"><div class="si sir"><i class="ti ti-user-x"></i></div><div class="sv">34</div><div class="sl">Suspended Accounts</div><div class="sch dn">↑ 4 this week</div></div>
+  </div>
+  <div class="ps-row">
+    <div class="psrch"><i class="ti ti-search"></i><input type="text" placeholder="Search by name, phone or email…"></div>
+    <select class="flt-sel"><option>All Status</option><option>Active</option><option>Suspended</option><option>Inactive</option></select>
+    <select class="flt-sel"><option>All Cities</option><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option></select>
+  </div>
+  <div class="card">
+    <div class="tw"><table>
+      <thead><tr><th>User</th><th>Phone</th><th>City</th><th>Total Trips</th><th>Total Spent</th><th>Rating</th><th>Joined</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">MC</div><div><div>Marie-Claire Foe</div><div style="font-size:11px;color:var(--t2)">mcfoe@gmail.com</div></div></div></td><td class="m">+237 677 123 456</td><td class="m">Douala</td><td>47</td><td style="color:var(--pr);font-weight:600">112,400 XAF</td><td><span style="color:var(--go)">⭐ 4.8</span></td><td class="m">Jan 2025</td><td><span class="bdg bok">Active</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">AT</div><div><div>Armel Tchami</div><div style="font-size:11px;color:var(--t2)">a.tchami@yahoo.fr</div></div></div></td><td class="m">+237 691 234 567</td><td class="m">Douala</td><td>23</td><td style="color:var(--pr);font-weight:600">58,900 XAF</td><td><span style="color:var(--go)">⭐ 4.5</span></td><td class="m">Mar 2025</td><td><span class="bdg bok">Active</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">BN</div><div><div>Brigitte Ngo</div><div style="font-size:11px;color:var(--t2)">brig.ngo@live.fr</div></div></div></td><td class="m">+237 655 345 678</td><td class="m">Yaoundé</td><td>89</td><td style="color:var(--pr);font-weight:600">224,600 XAF</td><td><span style="color:var(--go)">⭐ 4.9</span></td><td class="m">Oct 2024</td><td><span class="bdg bok">Active</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">JK</div><div><div>Jean-Pierre Kum</div><div style="font-size:11px;color:var(--t2)">jpkum@gmail.com</div></div></div></td><td class="m">+237 677 456 789</td><td class="m">Bafoussam</td><td>12</td><td style="color:var(--pr);font-weight:600">29,800 XAF</td><td><span style="color:var(--go)">⭐ 3.8</span></td><td class="m">May 2025</td><td><span class="bdg bcn">Suspended</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--puf);color:var(--pu)">EM</div><div><div>Estelle Mbarga</div><div style="font-size:11px;color:var(--t2)">emb@orange.cm</div></div></div></td><td class="m">+237 699 567 890</td><td class="m">Douala</td><td>61</td><td style="color:var(--pr);font-weight:600">154,700 XAF</td><td><span style="color:var(--go)">⭐ 4.7</span></td><td class="m">Dec 2024</td><td><span class="bdg bok">Active</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">DF</div><div><div>David Fouda</div><div style="font-size:11px;color:var(--t2)">dfouda@gmail.com</div></div></div></td><td class="m">+237 677 678 901</td><td class="m">Douala</td><td>5</td><td style="color:var(--pr);font-weight:600">12,200 XAF</td><td><span style="color:var(--go)">⭐ 4.2</span></td><td class="m">Apr 2026</td><td><span class="bdg bwt">Inactive</span></td><td><button class="btn btn-o btn-xs">View</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ══════════════ DRIVERS ══════════════ -->
+<section class="page" id="page-drivers">
+  <div class="ph">
+    <div><h1>Drivers</h1><div class="ph-sub">Manage your fleet of registered drivers</div></div>
+    <div class="ph-r">
+      <button class="btn btn-o"><i class="ti ti-download"></i> Export</button>
+      <button class="btn btn-p" onclick="openModal('m-add-driver')"><i class="ti ti-plus"></i> Add Driver</button>
+    </div>
+  </div>
+  <div class="sg">
+    <div class="sc cg"><div class="si sig"><i class="ti ti-steering-wheel"></i></div><div class="sv">347</div><div class="sl">Total Drivers</div><div class="sch up">↑ 12 this month</div></div>
+    <div class="sc cy"><div class="si siy"><i class="ti ti-circle-check"></i></div><div class="sv">284</div><div class="sl">Online Now</div><div class="sch nt">81.8% online rate</div></div>
+    <div class="sc cb"><div class="si sib"><i class="ti ti-car"></i></div><div class="sv">63</div><div class="sl">On Trip Now</div><div class="sch nt">22% of fleet</div></div>
+    <div class="sc cr"><div class="si sir"><i class="ti ti-star"></i></div><div class="sv">4.7</div><div class="sl">Avg. Driver Rating</div><div class="sch up">↑ 0.2 this month</div></div>
+  </div>
+  <div class="ps-row">
+    <div class="psrch"><i class="ti ti-search"></i><input type="text" placeholder="Search by name, phone or plate…"></div>
+    <select class="flt-sel"><option>All Status</option><option>Online</option><option>On Trip</option><option>Idle</option><option>Offline</option></select>
+    <select class="flt-sel"><option>All Types</option><option>🏍 Moto</option><option>🚗 Car</option><option>🚌 Minibus</option></select>
+  </div>
+  <div class="drv-grid">
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--prf);color:var(--pr)">EK</div><div style="flex:1"><div class="dc-name">Etienne Kamga</div><div class="dc-phone">+237 677 112 233</div></div><span class="bdg bok">Online</span></div><div class="dc-veh"><span style="font-size:16px">🏍</span><div><div style="font-weight:500;color:var(--tx)">Honda CB150 · 2022</div><div>LT 2022-BK4</div></div></div><div class="dc-stats"><div><div class="dc-sv">142</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.9★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">824K</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Suspend</button></div></div>
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--gof);color:var(--go)">PB</div><div style="flex:1"><div class="dc-name">Paul Bilong</div><div class="dc-phone">+237 691 223 344</div></div><span class="bdg bgo">On Trip</span></div><div class="dc-veh"><span style="font-size:16px">🚗</span><div><div style="font-weight:500;color:var(--tx)">Toyota Corolla · 2020</div><div>DL 2020-CA9</div></div></div><div class="dc-stats"><div><div class="dc-sv">218</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.8★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">1.2M</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Suspend</button></div></div>
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--blf);color:var(--bl)">DM</div><div style="flex:1"><div class="dc-name">David Mbida</div><div class="dc-phone">+237 655 334 455</div></div><span class="bdg bok">Online</span></div><div class="dc-veh"><span style="font-size:16px">🏍</span><div><div style="font-weight:500;color:var(--tx)">Yamaha NMAX · 2021</div><div>CE 2021-MX2</div></div></div><div class="dc-stats"><div><div class="dc-sv">97</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.7★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">562K</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Suspend</button></div></div>
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--rdf);color:var(--rd)">SN</div><div style="flex:1"><div class="dc-name">Sylvie Ngo</div><div class="dc-phone">+237 699 445 566</div></div><span class="bdg bcn">Offline</span></div><div class="dc-veh"><span style="font-size:16px">🚌</span><div><div style="font-weight:500;color:var(--tx)">Toyota HiAce · 2019</div><div>LT 2019-HI7</div></div></div><div class="dc-stats"><div><div class="dc-sv">334</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.6★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">1.8M</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-y btn-sm">Reactivate</button></div></div>
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--puf);color:var(--pu)">RN</div><div style="flex:1"><div class="dc-name">Roger Nkemeni</div><div class="dc-phone">+237 677 556 677</div></div><span class="bdg bok">Online</span></div><div class="dc-veh"><span style="font-size:16px">🏍</span><div><div style="font-weight:500;color:var(--tx)">Suzuki Burgman · 2023</div><div>YD 2023-SB5</div></div></div><div class="dc-stats"><div><div class="dc-sv">68</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.9★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">398K</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Suspend</button></div></div>
+    <div class="drv-card"><div class="dc-top"><div class="dc-av" style="background:var(--gof);color:var(--go)">AN</div><div style="flex:1"><div class="dc-name">Aimé Ndjodo</div><div class="dc-phone">+237 655 667 788</div></div><span class="bdg bgo">On Trip</span></div><div class="dc-veh"><span style="font-size:16px">🚗</span><div><div style="font-weight:500;color:var(--tx)">Hyundai i10 · 2021</div><div>DL 2021-IO3</div></div></div><div class="dc-stats"><div><div class="dc-sv">183</div><div class="dc-sl">Trips</div></div><div><div class="dc-sv" style="color:var(--go)">4.8★</div><div class="dc-sl">Rating</div></div><div><div class="dc-sv" style="color:var(--pr)">1.1M</div><div class="dc-sl">FCFA</div></div></div><div class="dc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Suspend</button></div></div>
+  </div>
+</section>
+
+<!-- ══════════════ REVENUE ══════════════ -->
+<section class="page" id="page-revenue">
+  <div class="ph">
+    <div><h1>Revenue</h1><div class="ph-sub">Financial performance and earnings breakdown</div></div>
+    <div class="ph-r">
+      <button class="btn btn-o"><i class="ti ti-download"></i> Export CSV</button>
+    </div>
+  </div>
+  <div class="chips" style="margin-bottom:20px">
+    <span class="chip" onclick="chipSelect(this,'rev-period');updateRevChart(this)">Today</span>
+    <span class="chip on" onclick="chipSelect(this,'rev-period');updateRevChart(this)">This Week</span>
+    <span class="chip" onclick="chipSelect(this,'rev-period');updateRevChart(this)">This Month</span>
+    <span class="chip" onclick="chipSelect(this,'rev-period');updateRevChart(this)">This Year</span>
+  </div>
+  <div class="rev-hero">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div><div style="font-size:12px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;font-weight:600">Total Revenue</div>
+        <div class="rev-big" id="rev-total">28,460,000 FCFA</div>
+        <div style="font-size:13px;color:var(--pr)">↑ 18.4% vs last week · 1,284 trips</div>
+      </div>
+      <div style="text-align:right"><div style="font-size:12px;color:var(--t2)">After 15% platform fee</div><div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--go)">24,191,000 FCFA</div><div style="font-size:12px;color:var(--t2)">Net payout to drivers</div></div>
+    </div>
+  </div>
+  <div class="rev-row">
+    <div class="rev-mini"><div class="rm-val" style="color:var(--pr)">4,269,000</div><div class="rm-lbl">Moto Revenue (FCFA)</div><div class="rm-chg up">↑ 12% · 724 trips</div></div>
+    <div class="rev-mini"><div class="rm-val" style="color:var(--bl)">18,540,000</div><div class="rm-lbl">Car Revenue (FCFA)</div><div class="rm-chg up">↑ 22% · 392 trips</div></div>
+    <div class="rev-mini"><div class="rm-val" style="color:var(--go)">5,651,000</div><div class="rm-lbl">Minibus Revenue (FCFA)</div><div class="rm-chg dn">↓ 4% · 168 trips</div></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="ch"><div class="ct">Revenue by Day</div></div>
+      <canvas id="rev-chart" height="220"></canvas>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">By Payment Method</div></div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:4px">
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:500">📱 MTN MoMo</span><span style="font-size:13px;font-weight:700">14,230,000 XAF</span></div><div style="background:var(--s2);border-radius:100px;height:6px;overflow:hidden"><div style="width:50%;height:100%;background:var(--pr);border-radius:100px"></div></div><div style="font-size:11px;color:var(--t2);margin-top:4px">50% of transactions</div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:500">🟠 Orange Money</span><span style="font-size:13px;font-weight:700">9,962,000 XAF</span></div><div style="background:var(--s2);border-radius:100px;height:6px;overflow:hidden"><div style="width:35%;height:100%;background:var(--go);border-radius:100px"></div></div><div style="font-size:11px;color:var(--t2);margin-top:4px">35% of transactions</div></div>
+        <div><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;font-weight:500">💵 Cash</span><span style="font-size:13px;font-weight:700">4,268,000 XAF</span></div><div style="background:var(--s2);border-radius:100px;height:6px;overflow:hidden"><div style="width:15%;height:100%;background:var(--bl);border-radius:100px"></div></div><div style="font-size:11px;color:var(--t2);margin-top:4px">15% of transactions</div></div>
+      </div>
+      <div style="border-top:1px solid var(--br);margin-top:20px;padding-top:16px">
+        <div class="ct" style="margin-bottom:12px">Top Zones by Revenue</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">🏙️ Douala Central</span><span style="font-size:13px;font-weight:700">12,804,000 XAF</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">🌆 Akwa — Bonanjo</span><span style="font-size:13px;font-weight:700">7,115,000 XAF</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">✈️ Airport Corridor</span><span style="font-size:13px;font-weight:700">4,872,000 XAF</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px">🏫 Yaoundé</span><span style="font-size:13px;font-weight:700">3,669,000 XAF</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TRANSACTIONS ══════════════ -->
+<section class="page" id="page-transactions">
+  <div class="ph">
+    <div><h1>Transactions</h1><div class="ph-sub">All payment transactions on the platform</div></div>
+    <div class="ph-r"><button class="btn btn-o"><i class="ti ti-download"></i> Export</button></div>
+  </div>
+  <div class="stabs">
+    <span class="stab on" onclick="stab(this,'tx-status')">All <span class="stab-ct">6,842</span></span>
+    <span class="stab" onclick="stab(this,'tx-status')">Completed <span class="stab-ct">6,410</span></span>
+    <span class="stab" onclick="stab(this,'tx-status')">Pending <span class="stab-ct">286</span></span>
+    <span class="stab" onclick="stab(this,'tx-status')">Failed <span class="stab-ct">112</span></span>
+    <span class="stab" onclick="stab(this,'tx-status')">Refunded <span class="stab-ct">34</span></span>
+  </div>
+  <div class="ps-row">
+    <div class="psrch"><i class="ti ti-search"></i><input type="text" placeholder="Search by TX ID, user or amount…"></div>
+    <select class="flt-sel"><option>All Methods</option><option>MTN MoMo</option><option>Orange Money</option><option>Cash</option></select>
+  </div>
+  <div class="card">
+    <div class="tw"><table>
+      <thead><tr><th>TX ID</th><th>User</th><th>Driver</th><th>Ride Type</th><th>Amount (FCFA)</th><th>Platform Fee</th><th>Net</th><th>Method</th><th>Status</th><th>Date</th></tr></thead>
+      <tbody>
+        <tr><td class="m">#TX-44821</td><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">MC</div>Marie-Claire F.</div></td><td>Etienne K.</td><td><span class="pill">🏍 Moto</span></td><td><b>1,200</b></td><td class="m">180</td><td style="color:var(--pr);font-weight:600">1,020</td><td>📱 MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May 14:32</td></tr>
+        <tr><td class="m">#TX-44820</td><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">NC</div>Nathalie C.</div></td><td>Paul B.</td><td><span class="pill">🚗 Car</span></td><td><b>3,500</b></td><td class="m">525</td><td style="color:var(--pr);font-weight:600">2,975</td><td>🟠 Orange Money</td><td><span class="bdg bgo">Pending</span></td><td class="m">14 May 14:28</td></tr>
+        <tr><td class="m">#TX-44819</td><td><div class="dc"><div class="avsm" style="background:var(--rdf);color:var(--rd)">JT</div>Jean T.</div></td><td>Sylvie N.</td><td><span class="pill">🚌 Minibus</span></td><td><b>500</b></td><td class="m">—</td><td class="m">—</td><td>💵 Cash</td><td><span class="bdg bcn">Failed</span></td><td class="m">14 May 14:15</td></tr>
+        <tr><td class="m">#TX-44818</td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">BF</div>Brigitte F.</div></td><td>David M.</td><td><span class="pill">🏍 Moto</span></td><td><b>800</b></td><td class="m">120</td><td style="color:var(--pr);font-weight:600">680</td><td>📱 MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May 14:08</td></tr>
+        <tr><td class="m">#TX-44817</td><td><div class="dc"><div class="avsm" style="background:var(--puf);color:var(--pu)">FK</div>Félix K.</div></td><td>Roger N.</td><td><span class="pill">🏍 Moto</span></td><td><b>1,400</b></td><td class="m">210</td><td style="color:var(--pr);font-weight:600">1,190</td><td>📱 MTN MoMo</td><td><span class="bdg bok">Completed</span></td><td class="m">14 May 13:50</td></tr>
+        <tr><td class="m">#TX-44816</td><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">MF</div>Marie F.</div></td><td>Aimé N.</td><td><span class="pill">🚗 Car</span></td><td><b>2,200</b></td><td class="m">330</td><td style="color:var(--pr);font-weight:600">1,870</td><td>🟠 Orange Money</td><td><span class="bdg bwt">Refunded</span></td><td class="m">14 May 13:44</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ══════════════ PAYOUTS ══════════════ -->
+<section class="page" id="page-payouts">
+  <div class="ph">
+    <div><h1>Payouts</h1><div class="ph-sub">Driver earnings and payout management</div></div>
+    <div class="ph-r"><button class="btn btn-p"><i class="ti ti-cash"></i> Process All Pending</button></div>
+  </div>
+  <div class="alert a-warn"><i class="ti ti-alert-triangle" style="font-size:20px;flex-shrink:0"></i><div><b>5 drivers</b> are waiting for payout approval — total pending: <b>182,400 FCFA</b></div></div>
+  <div class="pay-sum">
+    <div class="pay-card"><div class="pay-v" style="color:var(--go)">182,400</div><div class="pay-l">Pending Payouts (FCFA)</div></div>
+    <div class="pay-card"><div class="pay-v" style="color:var(--pr)">4.3M</div><div class="pay-l">Paid This Month (FCFA)</div></div>
+    <div class="pay-card"><div class="pay-v">5</div><div class="pay-l">Drivers Awaiting</div></div>
+    <div class="pay-card"><div class="pay-v">36,480</div><div class="pay-l">Avg. Payout (FCFA)</div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Pending Payouts</div></div>
+    <div class="tw"><table>
+      <thead><tr><th>Driver</th><th>Period</th><th>Trips</th><th>Gross (FCFA)</th><th>Fee (15%)</th><th>Net Payout</th><th>Method</th><th>Days Waiting</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--prf);color:var(--pr)">EK</div>Etienne Kamga</div></td><td class="m">May 1–14</td><td>142</td><td>970,588</td><td class="m">145,588</td><td style="color:var(--pr);font-weight:700">825,000</td><td>📱 MTN MoMo</td><td style="color:var(--go);font-weight:600">3 days</td><td><button class="btn btn-p btn-sm" onclick="openModal('m-confirm-payout')">Approve</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">PB</div>Paul Bilong</div></td><td class="m">May 1–14</td><td>218</td><td>1,411,765</td><td class="m">211,765</td><td style="color:var(--pr);font-weight:700">1,200,000</td><td>🟠 Orange Money</td><td style="color:var(--go);font-weight:600">2 days</td><td><button class="btn btn-p btn-sm" onclick="openModal('m-confirm-payout')">Approve</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--blf);color:var(--bl)">DM</div>David Mbida</div></td><td class="m">May 1–14</td><td>97</td><td>661,176</td><td class="m">99,176</td><td style="color:var(--pr);font-weight:700">562,000</td><td>📱 MTN MoMo</td><td style="color:var(--rd);font-weight:600">5 days</td><td><button class="btn btn-p btn-sm" onclick="openModal('m-confirm-payout')">Approve</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--puf);color:var(--pu)">RN</div>Roger Nkemeni</div></td><td class="m">May 1–14</td><td>68</td><td>468,235</td><td class="m">70,235</td><td style="color:var(--pr);font-weight:700">398,000</td><td>📱 MTN MoMo</td><td style="color:var(--go);font-weight:600">1 day</td><td><button class="btn btn-p btn-sm" onclick="openModal('m-confirm-payout')">Approve</button></td></tr>
+        <tr><td><div class="dc"><div class="avsm" style="background:var(--gof);color:var(--go)">AN</div>Aimé Ndjodo</div></td><td class="m">May 1–14</td><td>183</td><td>1,294,118</td><td class="m">194,118</td><td style="color:var(--pr);font-weight:700">1,100,000</td><td>🟠 Orange Money</td><td style="color:var(--rd);font-weight:600">4 days</td><td><button class="btn btn-p btn-sm" onclick="openModal('m-confirm-payout')">Approve</button></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ══════════════ ZONES ══════════════ -->
+<section class="page" id="page-zones">
+  <div class="ph">
+    <div><h1>Zones</h1><div class="ph-sub">Manage service coverage areas across Cameroon</div></div>
+    <div class="ph-r"><button class="btn btn-p"><i class="ti ti-plus"></i> Add Zone</button></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="ch"><div class="ct">Coverage Map — Cameroon</div></div>
+      <div style="background:var(--s2);border-radius:var(--r);overflow:hidden;height:280px">
+        <svg width="100%" height="280" viewBox="0 0 380 280">
+          <rect width="380" height="280" fill="#0C1C35"/>
+          <!-- Simplified Cameroon outline -->
+          <path d="M80 30 L140 20 L200 35 L260 25 L300 60 L320 100 L310 150 L290 190 L260 230 L220 260 L180 265 L150 240 L130 200 L100 160 L70 120 L60 80 Z" fill="#122440" stroke="#1E3356" stroke-width="1.5"/>
+          <!-- City zones (circles) -->
+          <circle cx="140" cy="200" r="20" fill="rgba(0,212,106,.15)" stroke="rgba(0,212,106,.5)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="200" cy="140" r="16" fill="rgba(33,150,243,.12)" stroke="rgba(33,150,243,.4)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="120" cy="120" r="12" fill="rgba(255,184,0,.1)" stroke="rgba(255,184,0,.4)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="250" cy="100" r="12" fill="rgba(139,92,246,.1)" stroke="rgba(139,92,246,.4)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <circle cx="230" cy="175" r="10" fill="rgba(255,71,87,.1)" stroke="rgba(255,71,87,.4)" stroke-width="1.5" stroke-dasharray="4 2"/>
+          <!-- City dots -->
+          <circle cx="140" cy="200" r="5" fill="#00D46A"/><text x="152" y="204" font-size="10" fill="rgba(255,255,255,.7)" font-family="DM Sans,sans-serif">Douala</text>
+          <circle cx="200" cy="140" r="5" fill="#2196F3"/><text x="212" y="144" font-size="10" fill="rgba(255,255,255,.7)" font-family="DM Sans,sans-serif">Yaoundé</text>
+          <circle cx="120" cy="120" r="4" fill="#FFB800"/><text x="130" y="124" font-size="9" fill="rgba(255,255,255,.6)" font-family="DM Sans,sans-serif">Bafoussam</text>
+          <circle cx="250" cy="100" r="4" fill="#8B5CF6"/><text x="260" y="104" font-size="9" fill="rgba(255,255,255,.6)" font-family="DM Sans,sans-serif">Garoua</text>
+          <circle cx="230" cy="175" r="4" fill="#FF4757"/><text x="240" y="179" font-size="9" fill="rgba(255,255,255,.6)" font-family="DM Sans,sans-serif">Bamenda</text>
+        </svg>
+      </div>
+    </div>
+    <div>
+      <div class="zone-grid" style="grid-template-columns:1fr 1fr">
+        <div class="zone-card"><div class="zc-top"><div><div class="zc-name">Douala</div><div class="zc-type">Primary Zone · Urban</div></div><span class="bdg bok">Active</span></div><div class="zc-ico" style="background:var(--prf);color:var(--pr)">🏙️</div><div class="zc-stats"><div class="zc-stat"><div class="zc-sv" style="color:var(--pr)">284</div><div class="zc-sl">Drivers</div></div><div class="zc-stat"><div class="zc-sv">1,100</div><div class="zc-sl">Trips/day</div></div></div><div class="zc-act"><span style="font-size:12px;color:var(--t2)">Base: <b style="color:var(--tx)">500 XAF</b></span><button class="btn btn-o btn-xs">Edit</button></div></div>
+        <div class="zone-card"><div class="zc-top"><div><div class="zc-name">Yaoundé</div><div class="zc-type">Secondary · Urban</div></div><span class="bdg bok">Active</span></div><div class="zc-ico" style="background:var(--blf);color:var(--bl)">🌆</div><div class="zc-stats"><div class="zc-stat"><div class="zc-sv" style="color:var(--bl)">112</div><div class="zc-sl">Drivers</div></div><div class="zc-stat"><div class="zc-sv">320</div><div class="zc-sl">Trips/day</div></div></div><div class="zc-act"><span style="font-size:12px;color:var(--t2)">Base: <b style="color:var(--tx)">450 XAF</b></span><button class="btn btn-o btn-xs">Edit</button></div></div>
+        <div class="zone-card"><div class="zc-top"><div><div class="zc-name">Bafoussam</div><div class="zc-type">Growing Zone</div></div><span class="bdg bok">Active</span></div><div class="zc-ico" style="background:var(--gof);color:var(--go)">🏡</div><div class="zc-stats"><div class="zc-stat"><div class="zc-sv" style="color:var(--go)">44</div><div class="zc-sl">Drivers</div></div><div class="zc-stat"><div class="zc-sv">98</div><div class="zc-sl">Trips/day</div></div></div><div class="zc-act"><span style="font-size:12px;color:var(--t2)">Base: <b style="color:var(--tx)">400 XAF</b></span><button class="btn btn-o btn-xs">Edit</button></div></div>
+        <div class="zone-card"><div class="zc-top"><div><div class="zc-name">Garoua</div><div class="zc-type">Expansion Zone</div></div><span class="bdg bwt">Pilot</span></div><div class="zc-ico" style="background:var(--puf);color:var(--pu)">🏜️</div><div class="zc-stats"><div class="zc-stat"><div class="zc-sv" style="color:var(--pu)">18</div><div class="zc-sl">Drivers</div></div><div class="zc-stat"><div class="zc-sv">32</div><div class="zc-sl">Trips/day</div></div></div><div class="zc-act"><span style="font-size:12px;color:var(--t2)">Base: <b style="color:var(--tx)">350 XAF</b></span><button class="btn btn-o btn-xs">Edit</button></div></div>
+        <div class="zone-card"><div class="zc-top"><div><div class="zc-name">Bamenda</div><div class="zc-type">New Zone</div></div><span class="bdg bcn">Inactive</span></div><div class="zc-ico" style="background:var(--rdf);color:var(--rd)">🌿</div><div class="zc-stats"><div class="zc-stat"><div class="zc-sv">0</div><div class="zc-sl">Drivers</div></div><div class="zc-stat"><div class="zc-sv">0</div><div class="zc-sl">Trips/day</div></div></div><div class="zc-act"><span style="font-size:12px;color:var(--t2)">Coming soon</span><button class="btn btn-y btn-xs">Activate</button></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ PROMOS ══════════════ -->
+<section class="page" id="page-promos">
+  <div class="ph">
+    <div><h1>Promos</h1><div class="ph-sub">Discount codes and promotional campaigns</div></div>
+    <div class="ph-r"><button class="btn btn-p" onclick="openModal('m-add-promo')"><i class="ti ti-plus"></i> Create Promo</button></div>
+  </div>
+  <div class="sg">
+    <div class="sc cg"><div class="si sig"><i class="ti ti-discount"></i></div><div class="sv">8</div><div class="sl">Active Promos</div><div class="sch up">3 new this month</div></div>
+    <div class="sc cy"><div class="si siy"><i class="ti ti-users"></i></div><div class="sv">1,284</div><div class="sl">Total Redemptions</div><div class="sch up">↑ 24% this week</div></div>
+    <div class="sc cb"><div class="si sib"><i class="ti ti-coin"></i></div><div class="sv">3.6M</div><div class="sl">Savings Given (FCFA)</div><div class="sch nt">All-time</div></div>
+    <div class="sc cr"><div class="si sir"><i class="ti ti-percent"></i></div><div class="sv">28%</div><div class="sl">Avg. Discount Value</div><div class="sch nt">Per redemption</div></div>
+  </div>
+  <div class="stabs"><span class="stab on" onclick="stab(this,'promo-status')">All</span><span class="stab" onclick="stab(this,'promo-status')">Active</span><span class="stab" onclick="stab(this,'promo-status')">Expired</span></div>
+  <div class="promo-grid">
+    <div class="promo-card"><div class="pc-top"><div><div class="pc-code">NAYGOCM</div><div class="pc-val">2,500 FCFA off first ride</div></div><span class="bdg bok">Active</span></div><div class="pc-meta"><div class="pc-m"><div class="pc-ml">Used / Limit</div><div class="pc-mv">847 / 1,000</div></div><div class="pc-m"><div class="pc-ml">Expires</div><div class="pc-mv">30 Jun 2026</div></div><div class="pc-m"><div class="pc-ml">Min. Fare</div><div class="pc-mv">1,500 FCFA</div></div><div class="pc-m"><div class="pc-ml">Type</div><div class="pc-mv">Fixed</div></div></div><div class="pc-bar-wrap"><div class="pc-bar" style="width:85%"></div></div><div class="pc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Disable</button></div></div>
+    <div class="promo-card"><div class="pc-top"><div><div class="pc-code">KIVO25</div><div class="pc-val">25% off — up to 5,000 FCFA</div></div><span class="bdg bok">Active</span></div><div class="pc-meta"><div class="pc-m"><div class="pc-ml">Used / Limit</div><div class="pc-mv">312 / 500</div></div><div class="pc-m"><div class="pc-ml">Expires</div><div class="pc-mv">15 Jun 2026</div></div><div class="pc-m"><div class="pc-ml">Min. Fare</div><div class="pc-mv">3,000 FCFA</div></div><div class="pc-m"><div class="pc-ml">Type</div><div class="pc-mv">Percentage</div></div></div><div class="pc-bar-wrap"><div class="pc-bar" style="width:62%"></div></div><div class="pc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Disable</button></div></div>
+    <div class="promo-card"><div class="pc-top"><div><div class="pc-code">MOTO500</div><div class="pc-val">500 FCFA off moto rides</div></div><span class="bdg bok">Active</span></div><div class="pc-meta"><div class="pc-m"><div class="pc-ml">Used / Limit</div><div class="pc-mv">125 / 200</div></div><div class="pc-m"><div class="pc-ml">Expires</div><div class="pc-mv">31 May 2026</div></div><div class="pc-m"><div class="pc-ml">Min. Fare</div><div class="pc-mv">800 FCFA</div></div><div class="pc-m"><div class="pc-ml">Type</div><div class="pc-mv">Fixed · Moto</div></div></div><div class="pc-bar-wrap"><div class="pc-bar" style="width:63%"></div></div><div class="pc-act"><button class="btn btn-o btn-sm" style="flex:1">Edit</button><button class="btn btn-r btn-sm">Disable</button></div></div>
+    <div class="promo-card"><div class="pc-top"><div><div class="pc-code">RAMADAN26</div><div class="pc-val">30% off — weekend special</div></div><span class="bdg bcn">Expired</span></div><div class="pc-meta"><div class="pc-m"><div class="pc-ml">Used / Limit</div><div class="pc-mv">500 / 500</div></div><div class="pc-m"><div class="pc-ml">Expired</div><div class="pc-mv">10 Apr 2026</div></div><div class="pc-m"><div class="pc-ml">Min. Fare</div><div class="pc-mv">2,000 FCFA</div></div><div class="pc-m"><div class="pc-ml">Type</div><div class="pc-mv">Percentage</div></div></div><div class="pc-bar-wrap"><div class="pc-bar" style="width:100%;background:var(--t3)"></div></div><div class="pc-act"><button class="btn btn-o btn-sm" style="flex:1">Duplicate</button><button class="btn btn-o btn-sm">Archive</button></div></div>
+  </div>
+</section>
+
+<!-- ══════════════ SETTINGS ══════════════ -->
+<section class="page" id="page-settings">
+  <div class="ph"><div><h1>Settings</h1><div class="ph-sub">Configure platform preferences and pricing</div></div></div>
+  <div class="set-tabs">
+    <button class="set-tab on" onclick="setTab(this,'set-general')">General</button>
+    <button class="set-tab" onclick="setTab(this,'set-pricing')">Pricing</button>
+    <button class="set-tab" onclick="setTab(this,'set-commission')">Commission</button>
+    <button class="set-tab" onclick="setTab(this,'set-notif')">Notifications</button>
+  </div>
+  <!-- General -->
+  <div class="set-sec on" id="set-general">
+    <div class="set-card"><h3>Platform Information</h3>
+      <div class="fgrid"><div class="fg"><label>App Name</label><input class="finput" value="Kivo Rides"></div><div class="fg"><label>Default Currency</label><select class="finput"><option selected>FCFA (XAF)</option><option>USD</option><option>EUR</option></select></div><div class="fg"><label>Default City</label><select class="finput"><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option></select></div><div class="fg"><label>App Language</label><select class="finput"><option>French / English</option><option>French</option><option>English</option></select></div><div class="fg fspan"><label>Support Email</label><input class="finput" value="support@kivorides.cm"></div><div class="fg"><label>Support Phone</label><input class="finput" value="+237 677 000 001"></div><div class="fg"><label>WhatsApp Support</label><input class="finput" value="+237 677 000 002"></div></div>
+    </div>
+    <div class="set-card"><h3>App Behavior</h3>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Allow Cash Payments</div><div class="tgl-sub">Riders can pay with cash in addition to mobile money</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Require Driver Photo</div><div class="tgl-sub">Drivers must upload a profile photo to go online</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Rating After Every Trip</div><div class="tgl-sub">Prompt users to rate their driver after completion</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Emergency SOS Button</div><div class="tgl-sub">Show emergency contact button in active trip screen</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+    </div>
+    <button class="btn btn-p" onclick="showToast('Settings saved successfully')"><i class="ti ti-check"></i> Save Changes</button>
+  </div>
+  <!-- Pricing -->
+  <div class="set-sec" id="set-pricing">
+    <div class="set-card"><h3>🏍 Moto Pricing</h3>
+      <div class="price-row"><div><div class="p-lbl">Base Fare</div><div class="p-sub">Charged at start of every trip</div></div><div class="price-input-wrap"><input class="p-inp" value="300" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Per Kilometre</div><div class="p-sub">Rate per km after base</div></div><div class="price-input-wrap"><input class="p-inp" value="150" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Minimum Fare</div><div class="p-sub">Minimum charge per trip</div></div><div class="price-input-wrap"><input class="p-inp" value="500" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Peak Hour Multiplier</div><div class="p-sub">Applied 7–9 AM and 5–8 PM</div></div><div class="price-input-wrap"><input class="p-inp" value="1.4" type="number" step="0.1"> <span style="font-size:12px;color:var(--t2)">×</span></div></div>
+    </div>
+    <div class="set-card"><h3>🚗 Car Pricing</h3>
+      <div class="price-row"><div><div class="p-lbl">Base Fare</div></div><div class="price-input-wrap"><input class="p-inp" value="1500" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Per Kilometre</div></div><div class="price-input-wrap"><input class="p-inp" value="380" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Minimum Fare</div></div><div class="price-input-wrap"><input class="p-inp" value="2000" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Peak Hour Multiplier</div></div><div class="price-input-wrap"><input class="p-inp" value="1.6" type="number" step="0.1"> <span style="font-size:12px;color:var(--t2)">×</span></div></div>
+    </div>
+    <div class="set-card"><h3>🚌 Minibus Pricing</h3>
+      <div class="price-row"><div><div class="p-lbl">Base Fare</div></div><div class="price-input-wrap"><input class="p-inp" value="200" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Per Kilometre</div></div><div class="price-input-wrap"><input class="p-inp" value="80" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Minimum Fare</div></div><div class="price-input-wrap"><input class="p-inp" value="300" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+    </div>
+    <button class="btn btn-p" onclick="showToast('Pricing updated successfully')"><i class="ti ti-check"></i> Save Pricing</button>
+  </div>
+  <!-- Commission -->
+  <div class="set-sec" id="set-commission">
+    <div class="set-card"><h3>Platform Commission</h3>
+      <div class="price-row"><div><div class="p-lbl">Standard Commission Rate</div><div class="p-sub">Applied to all completed trips</div></div><div class="price-input-wrap"><input class="p-inp" value="15" type="number"> <span style="font-size:12px;color:var(--t2)">%</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">New Driver Rate (first 30 days)</div><div class="p-sub">Reduced commission to attract drivers</div></div><div class="price-input-wrap"><input class="p-inp" value="10" type="number"> <span style="font-size:12px;color:var(--t2)">%</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Top Driver Rate (4.9★ & 200+ trips)</div><div class="p-sub">Reward top-performing drivers</div></div><div class="price-input-wrap"><input class="p-inp" value="12" type="number"> <span style="font-size:12px;color:var(--t2)">%</span></div></div>
+    </div>
+    <div class="set-card"><h3>Driver Bonuses</h3>
+      <div class="price-row"><div><div class="p-lbl">Daily 10 Trips Bonus</div></div><div class="price-input-wrap"><input class="p-inp" value="2000" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Daily 20 Trips Bonus</div></div><div class="price-input-wrap"><input class="p-inp" value="5000" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+      <div class="price-row"><div><div class="p-lbl">Weekly Top Driver Prize</div></div><div class="price-input-wrap"><input class="p-inp" value="25000" type="number"> <span style="font-size:12px;color:var(--t2)">FCFA</span></div></div>
+    </div>
+    <button class="btn btn-p" onclick="showToast('Commission settings saved')"><i class="ti ti-check"></i> Save Commission</button>
+  </div>
+  <!-- Notifications -->
+  <div class="set-sec" id="set-notif">
+    <div class="set-card"><h3>SMS Notifications</h3>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Trip Confirmation SMS</div><div class="tgl-sub">Send SMS to user when driver is assigned</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Driver Arrival SMS</div><div class="tgl-sub">Notify user when driver is 1 min away</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Payment Receipt SMS</div><div class="tgl-sub">Send payment confirmation to both parties</div></div><label class="sw"><input type="checkbox"><div class="sw-t"></div><div class="sw-k"></div></label></div>
+    </div>
+    <div class="set-card"><h3>Push Notifications</h3>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Promo Notifications</div><div class="tgl-sub">Notify users about available promo codes</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Surge Pricing Alert</div><div class="tgl-sub">Alert drivers when peak pricing activates</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+      <div class="tgl"><div class="tgl-info"><div class="tgl-ttl">Payout Ready Alert</div><div class="tgl-sub">Notify drivers when payout is processed</div></div><label class="sw"><input type="checkbox" checked><div class="sw-t"></div><div class="sw-k"></div></label></div>
+    </div>
+    <button class="btn btn-p" onclick="showToast('Notification settings saved')"><i class="ti ti-check"></i> Save Notifications</button>
+  </div>
+</section>
+
+</main>
+
+<!-- ══════════════ MODALS ══════════════ -->
+
+<!-- ADD DRIVER -->
+<div class="modal-bg" id="m-add-driver">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mh-l"><h2>Add New Driver</h2><p>Fill in the details to register a new driver</p></div><button class="mx" onclick="closeModal('m-add-driver')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="photo-up fspan" style="margin-bottom:18px"><i class="ti ti-camera"></i><p>Upload Driver Photo</p><small>JPG or PNG · Max 5MB · Min 300×300px</small><input type="file" accept="image/*"></div>
+      <div class="fgrid">
+        <div class="fg"><label>Full Name <span class="req">*</span></label><input class="finput" type="text" placeholder="e.g. Etienne Kamga"></div>
+        <div class="fg"><label>Phone Number <span class="req">*</span></label><input class="finput" type="tel" placeholder="+237 6XX XXX XXX"></div>
+        <div class="fg"><label>Email Address</label><input class="finput" type="email" placeholder="driver@example.com"></div>
+        <div class="fg"><label>Operating City <span class="req">*</span></label><select class="finput"><option value="">Select city…</option><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option><option>Garoua</option><option>Bamenda</option></select></div>
+        <div class="fg fspan">
+          <label>Vehicle Type <span class="req">*</span></label>
+          <div class="vt-grid" style="margin-top:6px">
+            <div class="vt-card sel" onclick="selectVType(this)"><input type="radio" name="vtype" value="moto" checked><div class="vti">🏍</div><div class="vtn">Moto</div></div>
+            <div class="vt-card" onclick="selectVType(this)"><input type="radio" name="vtype" value="car"><div class="vti">🚗</div><div class="vtn">Car</div></div>
+            <div class="vt-card" onclick="selectVType(this)"><input type="radio" name="vtype" value="minibus"><div class="vti">🚌</div><div class="vtn">Minibus</div></div>
+          </div>
+        </div>
+        <div class="fg"><label>Vehicle Brand & Model <span class="req">*</span></label><input class="finput" type="text" placeholder="e.g. Honda CB150 2022"></div>
+        <div class="fg"><label>Plate Number <span class="req">*</span></label><input class="finput" type="text" placeholder="e.g. LT 2022-BK4"></div>
+        <div class="fg"><label>Driver's License No. <span class="req">*</span></label><input class="finput" type="text" placeholder="License number"></div>
+        <div class="fg"><label>License Expiry Date</label><input class="finput" type="date"></div>
+        <div class="fg"><label>Emergency Contact Name</label><input class="finput" type="text" placeholder="Next of kin name"></div>
+        <div class="fg"><label>Emergency Contact Phone</label><input class="finput" type="tel" placeholder="+237 6XX XXX XXX"></div>
+        <div class="fg fspan"><label>Notes</label><textarea class="finput" placeholder="Any special notes about this driver…"></textarea></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-o" onclick="closeModal('m-add-driver')">Cancel</button>
+      <button class="btn btn-p" onclick="closeModal('m-add-driver');showToast('Driver created successfully!')"><i class="ti ti-check"></i> Create Driver</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRIP DETAIL -->
+<div class="modal-bg" id="m-trip-detail">
+  <div class="modal modal-lg">
+    <div class="mh"><div class="mh-l"><h2>Trip Details</h2><p>#TR-8821 · 14 May 2026, 14:32</p></div><button class="mx" onclick="closeModal('m-trip-detail')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><span class="bdg bok">Completed</span><span class="pill">🏍 Moto</span><span style="font-size:12px;color:var(--t2)">Trip duration: 18 min</span></div>
+      <div class="trip-detail-row">
+        <div class="td-item"><div class="td-lbl">Passenger</div><div class="td-val">Armel Mbassi</div><div style="font-size:12px;color:var(--t2)">+237 677 123 456 · ⭐ 4.8</div></div>
+        <div class="td-item"><div class="td-lbl">Driver</div><div class="td-val">Etienne Kamga</div><div style="font-size:12px;color:var(--t2)">+237 677 112 233 · ⭐ 4.9</div></div>
+        <div class="td-item"><div class="td-lbl">Pickup Location</div><div class="td-val">Akwa Centre, Rue Joss</div><div style="font-size:12px;color:var(--t2)">Douala</div></div>
+        <div class="td-item"><div class="td-lbl">Drop-off Location</div><div class="td-val">Bonaberi, Rue du Port</div><div style="font-size:12px;color:var(--t2)">Douala</div></div>
+        <div class="td-item"><div class="td-lbl">Distance</div><div class="td-val">4.2 km</div></div>
+        <div class="td-item"><div class="td-lbl">Duration</div><div class="td-val">18 minutes</div></div>
+        <div class="td-item"><div class="td-lbl">Fare Charged</div><div class="td-val" style="color:var(--pr)">1,200 FCFA</div></div>
+        <div class="td-item"><div class="td-lbl">Payment Method</div><div class="td-val">📱 MTN MoMo</div></div>
+        <div class="td-item"><div class="td-lbl">Platform Fee (15%)</div><div class="td-val" style="color:var(--rd)">180 FCFA</div></div>
+        <div class="td-item"><div class="td-lbl">Driver Payout</div><div class="td-val" style="color:var(--go)">1,020 FCFA</div></div>
+      </div>
+      <div style="background:var(--s2);border-radius:var(--r);height:120px;overflow:hidden;margin-top:4px">
+        <svg width="100%" height="120" viewBox="0 0 600 120"><rect width="600" height="120" fill="#0C1C35"/><line x1="0" y1="60" x2="600" y2="60" stroke="#1A3356" stroke-width="2"/><line x1="200" y1="0" x2="200" y2="120" stroke="#122440" stroke-width="1.5"/><line x1="400" y1="0" x2="400" y2="120" stroke="#122440" stroke-width="1.5"/><path d="M100 90 Q200 70 300 55 Q400 40 500 30" fill="none" stroke="#00D46A" stroke-width="2.5" stroke-dasharray="6 3"/><circle cx="100" cy="90" r="7" fill="#00D46A"/><circle cx="500" cy="30" r="7" fill="#FF4757"/><text x="108" y="94" font-size="10" fill="rgba(255,255,255,.6)" font-family="DM Sans,sans-serif">Pickup</text><text x="508" y="34" font-size="10" fill="rgba(255,255,255,.6)" font-family="DM Sans,sans-serif">Drop-off</text></svg>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-r btn-sm">Flag Trip</button>
+      <button class="btn btn-o" onclick="closeModal('m-trip-detail')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD USER -->
+<div class="modal-bg" id="m-add-user">
+  <div class="modal">
+    <div class="mh"><div class="mh-l"><h2>Add New User</h2><p>Register a user account manually</p></div><button class="mx" onclick="closeModal('m-add-user')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fgrid">
+        <div class="fg"><label>Full Name <span class="req">*</span></label><input class="finput" type="text" placeholder="User's full name"></div>
+        <div class="fg"><label>Phone Number <span class="req">*</span></label><input class="finput" type="tel" placeholder="+237 6XX XXX XXX"></div>
+        <div class="fg fspan"><label>Email Address</label><input class="finput" type="email" placeholder="user@example.com"></div>
+        <div class="fg"><label>City</label><select class="finput"><option>Douala</option><option>Yaoundé</option><option>Bafoussam</option><option>Garoua</option></select></div>
+        <div class="fg"><label>Preferred Language</label><select class="finput"><option>French</option><option>English</option></select></div>
+        <div class="fg"><label>Preferred Payment</label><select class="finput"><option>MTN MoMo</option><option>Orange Money</option><option>Cash</option></select></div>
+        <div class="fg"><label>Referral Code</label><input class="finput" type="text" placeholder="Optional referral code"></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-o" onclick="closeModal('m-add-user')">Cancel</button>
+      <button class="btn btn-p" onclick="closeModal('m-add-user');showToast('User account created!')"><i class="ti ti-check"></i> Create User</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PROMO -->
+<div class="modal-bg" id="m-add-promo">
+  <div class="modal">
+    <div class="mh"><div class="mh-l"><h2>Create Promo Code</h2><p>Set up a new discount or promotion</p></div><button class="mx" onclick="closeModal('m-add-promo')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fgrid">
+        <div class="fg fspan"><label>Promo Code <span class="req">*</span></label><input class="finput" type="text" placeholder="e.g. KIVO25" style="text-transform:uppercase;letter-spacing:.05em;font-weight:600"></div>
+        <div class="fg"><label>Discount Type <span class="req">*</span></label><select class="finput"><option>Fixed Amount (FCFA)</option><option>Percentage (%)</option></select></div>
+        <div class="fg"><label>Discount Value <span class="req">*</span></label><input class="finput" type="number" placeholder="e.g. 2500"></div>
+        <div class="fg"><label>Maximum Discount (FCFA)</label><input class="finput" type="number" placeholder="Cap for % discounts"></div>
+        <div class="fg"><label>Minimum Fare (FCFA)</label><input class="finput" type="number" placeholder="e.g. 1500"></div>
+        <div class="fg"><label>Max Redemptions</label><input class="finput" type="number" placeholder="Total usage limit"></div>
+        <div class="fg"><label>Per User Limit</label><input class="finput" type="number" placeholder="e.g. 1 (once per user)"></div>
+        <div class="fg"><label>Expiry Date <span class="req">*</span></label><input class="finput" type="date"></div>
+        <div class="fg fspan"><label>Applies To</label><select class="finput"><option>All Ride Types</option><option>🏍 Moto Only</option><option>🚗 Car Only</option><option>🚌 Minibus Only</option></select></div>
+        <div class="fg fspan"><label>Internal Note</label><textarea class="finput" placeholder="Describe the purpose of this promo…" style="min-height:64px"></textarea></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-o" onclick="closeModal('m-add-promo')">Cancel</button>
+      <button class="btn btn-p" onclick="closeModal('m-add-promo');showToast('Promo code created!')"><i class="ti ti-check"></i> Create Promo</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM PAYOUT -->
+<div class="modal-bg" id="m-confirm-payout">
+  <div class="modal" style="max-width:480px">
+    <div class="mh"><div class="mh-l"><h2>Confirm Payout</h2><p>Review before processing this payment</p></div><button class="mx" onclick="closeModal('m-confirm-payout')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div style="background:var(--s2);border-radius:var(--r);padding:16px;margin-bottom:16px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><div class="avsm" style="background:var(--prf);color:var(--pr);width:40px;height:40px;font-size:13px">EK</div><div><div style="font-size:14px;font-weight:600">Etienne Kamga</div><div style="font-size:12px;color:var(--t2)">+237 677 112 233 · MTN MoMo · · · · 4421</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:var(--s1);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--t2)">Trips (May 1–14)</div><div style="font-size:15px;font-weight:700;margin-top:2px">142</div></div>
+          <div style="background:var(--s1);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--t2)">Gross Earned</div><div style="font-size:15px;font-weight:700;margin-top:2px">970,588 XAF</div></div>
+          <div style="background:var(--s1);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--t2)">Platform Fee (15%)</div><div style="font-size:15px;font-weight:700;color:var(--rd);margin-top:2px">− 145,588 XAF</div></div>
+          <div style="background:var(--prf);border:1px solid rgba(0,212,106,.25);border-radius:8px;padding:10px"><div style="font-size:11px;color:var(--pr)">Net Payout</div><div style="font-size:18px;font-weight:800;color:var(--pr);margin-top:2px">825,000 XAF</div></div>
+        </div>
+      </div>
+      <div class="alert a-info"><i class="ti ti-info-circle" style="font-size:18px;flex-shrink:0"></i><span style="font-size:13px">This will send <b>825,000 FCFA</b> to Etienne's MTN MoMo account ending in <b>4421</b>. This action cannot be undone.</span></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-o" onclick="closeModal('m-confirm-payout')">Cancel</button>
+      <button class="btn btn-p" onclick="closeModal('m-confirm-payout');showToast('Payout of 825,000 FCFA processed!')"><i class="ti ti-send"></i> Confirm & Send</button>
+    </div>
+  </div>
+</div>
+
+<style>@keyframes dp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}</style>
+
+<script>
+/* ── State ── */
+let curPage='dashboard';
+const pgLabels={dashboard:'Dashboard',trips:'Trips',users:'Users',drivers:'Drivers',revenue:'Revenue',transactions:'Transactions',payouts:'Payouts',zones:'Zones',promos:'Promos',settings:'Settings'};
+
+/* ── Navigation ── */
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  const page=document.getElementById('page-'+id);
+  if(page){page.classList.add('active');curPage=id;}
+  if(el)el.classList.add('on');
+  document.getElementById('pg-label').textContent=pgLabels[id]||id;
+  closeSidebar();
+  if(id==='dashboard'){setTimeout(drawDashChart,80);}
+  if(id==='revenue'){setTimeout(drawRevChart,80);}
+}
+
+/* ── Sidebar ── */
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar'),bk=document.getElementById('sb-back');
+  sb.classList.toggle('mob-open');bk.classList.toggle('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('mob-open');
+  document.getElementById('sb-back').classList.remove('open');
+}
+
+/* ── Modals ── */
+function openModal(id){
+  const m=document.getElementById(id);
+  if(m){m.classList.add('open');document.body.style.overflow='hidden';}
+}
+function closeModal(id){
+  const m=document.getElementById(id);
+  if(m){m.classList.remove('open');document.body.style.overflow='';}
+}
+document.querySelectorAll('.modal-bg').forEach(bg=>{
+  bg.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open'),document.body.style.overflow=''});
+});
+
+/* ── Chips ── */
+function chipSelect(el,group){
+  el.closest('.chips').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ── Status tabs ── */
+function stab(el,grp){
+  el.closest('.stabs').querySelectorAll('.stab').forEach(s=>s.classList.remove('on'));
+  el.classList.add('on');
+}
+
+/* ── Settings tabs ── */
+function setTab(el,secId){
+  el.closest('.set-tabs').querySelectorAll('.set-tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  document.querySelectorAll('.set-sec').forEach(s=>s.classList.remove('on'));
+  const sec=document.getElementById(secId);
+  if(sec)sec.classList.add('on');
+}
+
+/* ── Vehicle type ── */
+function selectVType(el){
+  el.closest('.vt-grid').querySelectorAll('.vt-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  el.querySelector('input[type=radio]').checked=true;
+}
+
+/* ── Toast ── */
+function showToast(msg){
+  const t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML=`<i class="ti ti-circle-check"></i> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .4s';setTimeout(()=>t.remove(),400);},3000);
+}
+
+/* ── Revenue chip update ── */
+function updateRevChart(el){
+  const labels={Today:'Today',week:'Week',month:'Month',year:'Year'};
+  const vals={'Today':'4,218,400 FCFA','This Week':'28,460,000 FCFA','This Month':'118,240,000 FCFA','This Year':'842,600,000 FCFA'};
+  const txt=el.textContent.trim();
+  const el2=document.getElementById('rev-total');
+  if(el2&&vals[txt])el2.textContent=vals[txt];
+  setTimeout(drawRevChart,60);
+}
+
+/* ── DASHBOARD CHART ── */
+function drawDashChart(){
+  const c=document.getElementById('dash-chart');
+  if(!c||!c.parentElement)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40;
+  const H=195;
+  c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);
+  c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const data=[2800000,3200000,2600000,3800000,4100000,3600000,4200000];
+  const lbls=['Mon','Tue','Wed','Thu','Fri','Sat','Today'];
+  const max=Math.max(...data)*1.12;
+  const pad={t:14,r:14,b:28,l:54};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  /* Grid */
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(cH/4)*i;
+    ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.28)';ctx.font='10px DM Sans,system-ui';ctx.textAlign='right';
+    ctx.fillText(((max-(max/4)*i)/1e6).toFixed(1)+'M',pad.l-6,y+4);
+  }
+  const step=cW/(data.length-1);
+  const pts=data.map((d,i)=>({x:pad.l+i*step,y:pad.t+cH-(d/max)*cH}));
+  /* Area */
+  ctx.beginPath();
+  pts.forEach((p,i)=>{if(i===0){ctx.moveTo(p.x,p.y);return;}const pp=pts[i-1],cx=(pp.x+p.x)/2;ctx.bezierCurveTo(cx,pp.y,cx,p.y,p.x,p.y);});
+  ctx.lineTo(pts[pts.length-1].x,pad.t+cH);ctx.lineTo(pad.l,pad.t+cH);ctx.closePath();
+  const g=ctx.createLinearGradient(0,pad.t,0,pad.t+cH);g.addColorStop(0,'rgba(0,212,106,.22)');g.addColorStop(1,'rgba(0,212,106,.02)');
+  ctx.fillStyle=g;ctx.fill();
+  /* Line */
+  ctx.beginPath();
+  pts.forEach((p,i)=>{if(i===0){ctx.moveTo(p.x,p.y);return;}const pp=pts[i-1],cx=(pp.x+p.x)/2;ctx.bezierCurveTo(cx,pp.y,cx,p.y,p.x,p.y);});
+  ctx.strokeStyle='#00D46A';ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.stroke();
+  /* Dots */
+  pts.forEach((p,i)=>{
+    const last=i===pts.length-1;
+    ctx.beginPath();ctx.arc(p.x,p.y,last?5:3.5,0,Math.PI*2);
+    ctx.fillStyle=last?'#00D46A':'#0D1829';ctx.strokeStyle='#00D46A';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+    ctx.fillStyle=last?'rgba(0,212,106,.9)':'rgba(255,255,255,.3)';
+    ctx.font=(last?'600 ':'')+'10.5px DM Sans,system-ui';ctx.textAlign='center';ctx.fillText(lbls[i],p.x,H-5);
+  });
+}
+
+/* ── REVENUE CHART ── */
+function drawRevChart(){
+  const c=document.getElementById('rev-chart');
+  if(!c||!c.parentElement)return;
+  const dpr=window.devicePixelRatio||1;
+  const W=c.parentElement.clientWidth-40;
+  const H=220;
+  c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);
+  c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const moto=[620000,800000,540000,900000,760000,1100000,549000];
+  const car=[1200000,1600000,1100000,2000000,1800000,2400000,1440000];
+  const bus=[480000,560000,420000,680000,590000,780000,462000];
+  const maxVal=Math.max(...car.map((v,i)=>v+moto[i]+bus[i]))*1.12;
+  const pad={t:14,r:14,b:28,l:58};
+  const cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const bw=Math.min(cW/(days.length*1.6),42),gap=(cW-bw*days.length)/(days.length+1);
+  /* Grid */
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(cH/4)*i;
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.28)';ctx.font='10px DM Sans,system-ui';ctx.textAlign='right';
+    ctx.fillText(((maxVal-(maxVal/4)*i)/1e6).toFixed(1)+'M',pad.l-6,y+4);
+  }
+  days.forEach((d,i)=>{
+    const x=pad.l+gap+(bw+gap)*i;
+    const bh=bw/2.5;
+    const h3=(bus[i]/maxVal)*cH,h2=(moto[i]/maxVal)*cH,h1=(car[i]/maxVal)*cH;
+    /* Bus segment */
+    ctx.fillStyle='rgba(255,184,0,.85)';ctx.beginPath();ctx.roundRect(x,pad.t+cH-h3,bw,h3,i===5?[0,0,4,4]:[0,0,4,4]);ctx.fill();
+    /* Moto segment */
+    ctx.fillStyle='rgba(33,150,243,.85)';ctx.beginPath();ctx.roundRect(x,pad.t+cH-h3-h2,bw,h2,0);ctx.fill();
+    /* Car segment */
+    ctx.fillStyle='rgba(0,212,106,.9)';ctx.beginPath();ctx.roundRect(x,pad.t+cH-h3-h2-h1,bw,h1,i===5?[4,4,0,0]:[4,4,0,0]);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='10.5px DM Sans,system-ui';ctx.textAlign='center';
+    ctx.fillText(d,x+bw/2,H-5);
+  });
+  /* Legend */
+  const items=[['#00D46A','Car'],['rgba(33,150,243,.85)','Moto'],['rgba(255,184,0,.85)','Minibus']];
+  items.forEach((item,i)=>{
+    const lx=pad.l+i*90;
+    ctx.fillStyle=item[0];ctx.beginPath();ctx.roundRect(lx,6,10,10,2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10.5px DM Sans,system-ui';ctx.textAlign='left';ctx.fillText(item[1],lx+14,15);
+  });
+}
+
+/* ── Init ── */
+window.addEventListener('load',()=>{setTimeout(drawDashChart,100);});
+let rzTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(rzTimer);
+  rzTimer=setTimeout(()=>{
+    if(curPage==='dashboard')drawDashChart();
+    if(curPage==='revenue')drawRevChart();
+  },200);
+});
+</script>
+</body>
+</html>

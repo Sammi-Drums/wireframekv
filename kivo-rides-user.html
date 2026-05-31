@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kivo Rides — User Requests</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#07101E;--s1:#0D1829;--s2:#152133;--s3:#1C2B42;--pr:#00D46A;--prd:#00A854;--prf:rgba(0,212,106,.12);--go:#FFB800;--gof:rgba(255,184,0,.12);--rd:#FF4757;--rdf:rgba(255,71,87,.12);--bl:#2196F3;--blf:rgba(33,150,243,.12);--pu:#8B5CF6;--puf:rgba(139,92,246,.12);--tx:#EDF2FF;--t2:#8896AE;--t3:#3E5170;--br:rgba(255,255,255,.065);--br2:rgba(255,255,255,.12);--r:10px;--rl:16px;--rx:20px;--sw:228px;--th:58px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.55}
+h1,h2,h3,.syn{font-family:'Syne',sans-serif}
+input,select,textarea,button{font-family:inherit}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--t3);border-radius:10px}
+
+/* ── TOPBAR ── */
+.topbar{position:fixed;top:0;left:var(--sw);right:0;height:var(--th);background:var(--s1);border-bottom:1px solid var(--br);display:flex;align-items:center;padding:0 24px;gap:14px;z-index:150;transition:left .3s,right .3s}
+.ham{display:flex;background:none;border:none;color:var(--t2);font-size:22px;cursor:pointer;padding:4px;line-height:1;transition:all .15s;align-items:center;justify-content:center;flex-shrink:0}
+.ham:hover{color:var(--tx)}
+.ham:active{transform:scale(.95)}
+#pg-label{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;white-space:nowrap;color:var(--tx)}
+.tsrch{flex:1;max-width:300px;display:flex;align-items:center;gap:8px;background:var(--s2);border:1px solid var(--br);border-radius:9px;padding:8px 14px}
+.tsrch .ti{color:var(--t3);font-size:16px;flex-shrink:0}
+.tsrch input{background:none;border:none;outline:none;color:var(--tx);font-size:13px;width:100%}
+.tsrch input::placeholder{color:var(--t3)}
+.tact{display:flex;align-items:center;gap:10px;margin-left:auto}
+.tnotif{position:relative;width:36px;height:36px;border:1px solid var(--br);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:18px;background:none;transition:all .15s}
+.tnotif:hover{background:var(--s2);color:var(--tx)}
+.ndot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--rd);border-radius:50%;border:2px solid var(--s1)}
+.tav{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#000;cursor:pointer;flex-shrink:0}
+
+/* ── SIDEBAR ── */
+.sidebar{width:var(--sw);background:var(--s1);border-right:1px solid var(--br);position:fixed;top:0;left:0;bottom:0;z-index:180;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;transition:width .3s;padding-right:0}
+.sidebar.collapsed{width:70px}
+.sidebar.collapsed .sb-title,.sidebar.collapsed .ni-lbl,.sidebar.collapsed .ap-name,.sidebar.collapsed .ap-role,.sidebar.collapsed .slbl{display:none}
+.sidebar.collapsed .sb-nav{padding:14px 4px}
+.sidebar.collapsed .ni{justify-content:center;gap:0}
+.sidebar.collapsed .sb-brand{justify-content:center;padding:18px 8px 16px}
+.topbar.collapsed{left:70px;right:0}
+.main.collapsed{margin-left:70px}
+.sb-brand{display:flex;align-items:center;gap:11px;padding:18px 16px 16px;border-bottom:1px solid var(--br);flex-shrink:0;overflow:hidden}
+.sb-logo{width:36px;height:36px;background:var(--pr);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#000;flex-shrink:0;letter-spacing:-.5px}
+.sb-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;white-space:nowrap;overflow:hidden}
+.sb-title span{color:var(--pr)}
+.sb-nav{flex:1;padding:14px 10px;overflow-y:auto}
+.slbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);padding:10px 10px 4px;white-space:nowrap;overflow:hidden}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:9px;color:var(--t2);cursor:pointer;transition:all .15s;margin-bottom:1px;white-space:nowrap;position:relative}
+.ni:hover{background:var(--s2);color:var(--tx)}
+.ni.on{background:var(--prf);color:var(--pr);font-weight:500}
+.ni>.ti{font-size:17px;flex-shrink:0}
+.ni-lbl{flex:1;overflow:hidden}
+.ni-end{margin-left:auto;flex-shrink:0}
+.ni-ct{background:var(--rd);color:#fff;font-size:10px;font-weight:700;border-radius:100px;padding:1px 7px}
+.ni-dot{width:6px;height:6px;background:var(--pr);border-radius:50%}
+.sb-foot{border-top:1px solid var(--br);padding:12px 10px;flex-shrink:0}
+.ap{display:flex;align-items:center;gap:9px;background:var(--s2);border-radius:9px;padding:10px;overflow:hidden}
+.ap-av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#000;flex-shrink:0}
+.ap-name{font-size:13px;font-weight:500;white-space:nowrap}
+.ap-role{font-size:11px;color:var(--t2);white-space:nowrap}
+.sb-back{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:190}
+.collapse-btn{position:absolute;bottom:14px;left:10px;right:10px;background:none;border:1px solid var(--br2);color:var(--t2);padding:10px;border-radius:9px;cursor:pointer;transition:all .15s;font-size:14px}
+.collapse-btn:hover{background:var(--s2);color:var(--tx)}
+
+/* ── MAIN ── */
+.main{margin-left:var(--sw);padding-top:var(--th);min-height:100vh;transition:margin-left .3s;position:relative;z-index:1}
+
+/* ── PAGE SECTIONS ── */
+.page-section{display:none;padding:26px 28px;animation:fadeIn .3s ease}
+.page-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PAGE HEADER ── */
+.ph{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:24px}
+.ph h1{font-size:22px;font-weight:800}
+.ph-sub{font-size:13px;color:var(--t2);margin-top:3px}
+.ph-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;line-height:1}
+.btn-o{background:transparent;border:1px solid var(--br2);color:var(--t2)}
+.btn-o:hover{background:var(--s2);color:var(--tx)}
+.btn-p{background:var(--pr);color:#000;font-weight:600}
+.btn-p:hover{background:var(--prd)}
+.btn-r{background:var(--rdf);color:var(--rd);border:1px solid rgba(255,71,87,.25)}
+.btn-r:hover{background:rgba(255,71,87,.22)}
+.btn-y{background:var(--gof);color:var(--go);border:1px solid rgba(255,184,0,.25)}
+.btn-sm{padding:6px 13px;font-size:12px}
+.btn-xs{padding:4px 10px;font-size:11.5px;border-radius:7px}
+.btn-icon{width:32px;height:32px;padding:0;justify-content:center}
+
+/* ── FILTER CHIPS ── */
+.filter-bar{display:flex;gap:10px;overflow-x:auto;padding:0 0 14px;margin-bottom:20px}
+.fchip{background:var(--s1);border:1px solid var(--br);border-radius:100px;padding:7px 16px;font-size:13px;color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.fchip:hover{border-color:var(--br2)}
+.fchip.active{background:var(--prf);color:var(--pr);border-color:rgba(0,212,106,.35)}
+
+/* ── REQUEST CARDS ── */
+.requests-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.req-card{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:20px;transition:all .15s;cursor:pointer;position:relative;overflow:hidden}
+.req-card:hover{border-color:var(--br2);transform:translateY(-2px)}
+.req-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--pr)}
+.req-card.pending::before{background:var(--go)}
+.req-card.cancelled::before{background:var(--rd)}
+.req-card.completed::before{background:var(--pr)}
+
+.req-header{display:flex;align-items:start;justify-content:space-between;margin-bottom:14px}
+.req-id{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--tx)}
+.req-status{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px}
+.req-status.completed{background:var(--prf);color:var(--pr)}
+.req-status.pending{background:var(--gof);color:var(--go)}
+.req-status.cancelled{background:var(--rdf);color:var(--rd)}
+.req-status.accepted{background:var(--blf);color:var(--bl)}
+
+.req-route{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--br)}
+.route-dot{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:2px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--pr);flex-shrink:0}
+.dot.end{background:var(--rd)}
+.route-line{width:2px;height:32px;background:var(--br)}
+.route-info{flex:1}
+.route-label{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.route-text{font-size:13px;font-weight:500;color:var(--tx)}
+
+.req-details{display:flex;gap:14px;margin-bottom:14px;flex-wrap:wrap}
+.detail-item{flex:1;min-width:140px;background:var(--s2);border-radius:10px;padding:10px 12px}
+.detail-label{font-size:10.5px;color:var(--t2);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.detail-value{font-size:15px;font-weight:700}
+.detail-value.price{color:var(--pr)}
+
+.req-driver{background:var(--s2);border-radius:12px;padding:12px;display:flex;align-items:center;gap:11px;margin-bottom:14px}
+.driver-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--bl),#1976D2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;flex-shrink:0}
+.driver-info{flex:1;min-width:0}
+.driver-name{font-size:13.5px;font-weight:600;color:var(--tx)}
+.driver-vehicle{font-size:11px;color:var(--t2)}
+.driver-rating{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:600}
+.rating-star{color:var(--go)}
+
+.req-actions{display:flex;gap:10px;flex-wrap:wrap}
+.req-btn{flex:1;min-width:100px;padding:9px 12px;border-radius:9px;font-size:12.5px;font-weight:600;border:none;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.req-btn-primary{background:var(--pr);color:#000}
+.req-btn-primary:hover{background:var(--prd)}
+.req-btn-secondary{background:transparent;border:1px solid var(--br2);color:var(--t2)}
+.req-btn-secondary:hover{background:var(--s2);color:var(--tx)}
+.req-btn-danger{background:var(--rdf);color:var(--rd);border:1px solid rgba(255,71,87,.25)}
+.req-btn-danger:hover{background:rgba(255,71,87,.18)}
+
+/* ── EMPTY STATE ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 30px;text-align:center}
+.empty-icon{font-size:56px;margin-bottom:16px;opacity:.6}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.empty-text{font-size:13px;color:var(--t2);max-width:300px;margin-bottom:20px}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;animation:fadein .2s;overflow:auto;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);max-width:600px;width:100%;max-height:90vh;overflow-y:auto;animation:slideup .3s cubic-bezier(.32,.72,0,1);margin:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:20px;border-bottom:1px solid var(--br);flex-shrink:0}
+.modal-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800}
+.modal-close{background:none;border:none;color:var(--t2);font-size:20px;cursor:pointer;transition:all .15s}
+.modal-close:hover{color:var(--tx)}
+.modal-body{padding:20px;flex:1}
+.modal-footer{display:flex;gap:10px;padding:20px;border-top:1px solid var(--br);flex-shrink:0;flex-wrap:wrap}
+.modal-footer button{flex:1;min-width:120px}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes slideup{from{transform:translateY(30px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ── FORM STYLES ── */
+.form-group{margin-bottom:16px}
+.form-label{display:block;font-size:13px;font-weight:600;color:var(--t2);margin-bottom:6px;text-transform:uppercase;letter-spacing:.02em}
+.form-control{width:100%;background:var(--s2);border:1px solid var(--br2);border-radius:10px;padding:12px 14px;color:var(--tx);font-size:14px;outline:none;transition:border-color .15s}
+.form-control:focus{border-color:var(--pr)}
+.form-control::placeholder{color:var(--t3)}
+textarea.form-control{resize:vertical;min-height:100px;font-family:inherit}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row.full{grid-template-columns:1fr}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  :root{--sw:228px}
+  .sidebar{left:0}
+  .sidebar.collapsed{left:-228px}
+  .topbar{left:0}
+  .topbar.collapsed{left:0}
+  .main{margin-left:0}
+  .main.collapsed{margin-left:0}
+  .ham{display:flex}
+  .sb-back.show{display:block}
+  .sidebar.show{left:0}
+  .collapse-btn{display:none}
+}
+
+@media(max-width:768px){
+  :root{--th:56px;--sw:220px}
+  .requests-grid{grid-template-columns:1fr}
+  .ph{flex-direction:column}
+  .ph h1{font-size:20px}
+  .filter-bar{margin-bottom:14px}
+  .tsrch{max-width:100%;flex:1}
+  .form-row{grid-template-columns:1fr}
+  .req-details{gap:8px}
+  .detail-item{min-width:auto}
+  .req-actions{gap:8px}
+  .req-btn{padding:8px 10px;font-size:12px}
+  .modal{border-radius:20px 20px 0 0;max-height:90vh}
+  .modal-overlay{align-items:flex-end;padding:0}
+}
+
+@media(max-width:480px){
+  :root{--th:52px;--sw:180px}
+  .topbar{padding:0 14px;gap:8px}
+  #pg-label{font-size:14px}
+  .tsrch{max-width:none;padding:6px 10px}
+  .tsrch input{font-size:12px}
+  .tact{gap:6px}
+  .tnotif{width:32px;height:32px;font-size:16px}
+  .tav{width:32px;height:32px;font-size:10px}
+  .ph h1{font-size:18px}
+  .ph-sub{font-size:12px}
+  .filter-bar{gap:6px;padding-bottom:10px;margin-bottom:14px}
+  .fchip{padding:5px 12px;font-size:12px}
+  .req-card{padding:14px}
+  .req-header{margin-bottom:10px}
+  .req-id{font-size:12px}
+  .req-status{font-size:10px;padding:3px 8px}
+  .req-route{gap:10px;margin-bottom:12px;padding-bottom:10px}
+  .route-line{height:24px}
+  .req-details{flex-direction:column;gap:6px;margin-bottom:10px}
+  .detail-item{padding:8px 10px}
+  .detail-label{font-size:10px;margin-bottom:2px}
+  .detail-value{font-size:14px}
+  .req-driver{padding:10px;margin-bottom:10px}
+  .driver-avatar{width:36px;height:36px;font-size:11px}
+  .driver-name{font-size:12px}
+  .driver-vehicle{font-size:10px}
+  .req-actions{gap:6px}
+  .req-btn{padding:7px 8px;font-size:11px}
+  .modal{border-radius:20px 20px 0 0}
+  .modal-header{padding:16px}
+  .modal-title{font-size:16px}
+  .modal-body{padding:14px}
+  .modal-footer{padding:14px;gap:8px}
+  .form-control{padding:10px 12px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-logo">KR</div>
+    <div class="sb-title">Kivo <span>Rides</span></div>
+  </div>
+  <nav class="sb-nav">
+    <div class="slbl">Main</div>
+    <div class="ni on" data-page="requests" onclick="switchPage('requests')"><i class="ti ti-layout-dashboard"></i><span class="ni-lbl">Requests</span></div>
+    <div class="ni" data-page="history" onclick="switchPage('history')"><i class="ti ti-history"></i><span class="ni-lbl">History</span></div>
+    <div class="ni" data-page="payments" onclick="switchPage('payments')"><i class="ti ti-wallet"></i><span class="ni-lbl">Payments</span></div>
+    <div class="slbl" style="margin-top:16px">Account</div>
+    <div class="ni" data-page="profile" onclick="switchPage('profile')"><i class="ti ti-user"></i><span class="ni-lbl">Profile</span></div>
+    <div class="ni" data-page="settings" onclick="switchPage('settings')"><i class="ti ti-settings"></i><span class="ni-lbl">Settings</span></div>
+    <div class="ni" data-page="support" onclick="switchPage('support')"><i class="ti ti-help"></i><span class="ni-lbl">Support</span></div>
+  </nav>
+  <div class="sb-foot">
+    <div class="ap">
+      <div class="ap-av">AS</div>
+      <div>
+        <div class="ap-name">Akia Samuel</div>
+        <div class="ap-role">Passenger</div>
+      </div>
+    </div>
+    <button class="collapse-btn" onclick="toggleCollapseSidebar()"><i class="ti ti-arrow-left"></i> Collapse</button>
+  </div>
+</div>
+
+<div class="sb-back" id="sb-back"></div>
+
+<div class="topbar">
+  <span id="pg-label">Ride Requests</span>
+  <button class="ham" id="ham" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+
+  <div class="tsrch">
+    <i class="ti ti-search"></i>
+    <input type="text" placeholder="Search by ID or driver...">
+  </div>
+  <div class="tact">
+    <button class="tnotif"><i class="ti ti-bell"></i><span class="ndot"></span></button>
+    <div class="tav">AS</div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- REQUESTS PAGE -->
+  <div class="page-section active" id="page-requests">
+    <div style="padding:26px 28px">
+    <!-- PAGE HEADER -->
+    <div class="ph">
+      <div>
+        <h1>Your Ride Requests</h1>
+        <p class="ph-sub">Manage and track all your ride requests in one place</p>
+      </div>
+      <div class="ph-r">
+        <button class="btn btn-p" onclick="openModal('newRequestModal')"><i class="ti ti-plus"></i> New Request</button>
+      </div>
+    </div>
+
+    <!-- FILTER CHIPS -->
+    <div class="filter-bar">
+      <div class="fchip active">All Requests</div>
+      <div class="fchip">Pending</div>
+      <div class="fchip">Accepted</div>
+      <div class="fchip">Completed</div>
+      <div class="fchip">Cancelled</div>
+    </div>
+
+    <!-- REQUESTS GRID -->
+    <div class="requests-grid">
+      
+      <!-- COMPLETED REQUEST -->
+      <div class="req-card completed">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0847</div>
+          <span class="req-status completed"><i class="ti ti-check"></i> Completed</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">Palm Beach Hotel</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Airport Terminal 3</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">12.5 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Duration</div>
+            <div class="detail-value">24 min</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Fare</div>
+            <div class="detail-value price">$24.50</div>
+          </div>
+        </div>
+
+        <div class="req-driver">
+          <div class="driver-avatar">MK</div>
+          <div class="driver-info">
+            <div class="driver-name">Marcus Khan</div>
+            <div class="driver-vehicle">Silver Toyota • 4.8★</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-secondary" onclick="openModal('messageModal')"><i class="ti ti-message"></i> Message</button>
+          <button class="req-btn req-btn-secondary" onclick="openModal('receiptModal')"><i class="ti ti-receipt"></i> Receipt</button>
+        </div>
+      </div>
+
+      <!-- PENDING REQUEST -->
+      <div class="req-card pending">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0851</div>
+          <span class="req-status pending"><i class="ti ti-clock"></i> Pending</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">Downtown Shopping Mall</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Central Business District</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">4.2 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Est. Duration</div>
+            <div class="detail-value">12 min</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Est. Fare</div>
+            <div class="detail-value price">$8.90</div>
+          </div>
+        </div>
+
+        <div class="req-driver" style="background:var(--gof)">
+          <div class="driver-avatar" style="background:linear-gradient(135deg,var(--go),#FFA500)">🕐</div>
+          <div class="driver-info">
+            <div class="driver-name">Waiting for driver...</div>
+            <div class="driver-vehicle">2 drivers nearby</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-primary" onclick="openModal('callModal')"><i class="ti ti-phone"></i> Call Driver</button>
+          <button class="req-btn req-btn-danger" onclick="openModal('cancelModal')"><i class="ti ti-x"></i> Cancel</button>
+        </div>
+      </div>
+
+      <!-- ACCEPTED REQUEST -->
+      <div class="req-card accepted">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0849</div>
+          <span class="req-status accepted"><i class="ti ti-car"></i> Accepted</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">Luxury Apartments Complex</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Beach Resort & Spa</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">18.3 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">ETA</div>
+            <div class="detail-value">8 min away</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Fare</div>
+            <div class="detail-value price">$32.75</div>
+          </div>
+        </div>
+
+        <div class="req-driver">
+          <div class="driver-avatar" style="background:linear-gradient(135deg,var(--pu),#7C3AED)">SJ</div>
+          <div class="driver-info">
+            <div class="driver-name">Sofia Johnson</div>
+            <div class="driver-vehicle">Black BMW • 4.9★</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-primary" onclick="openModal('trackModal')"><i class="ti ti-map-pin"></i> Track Driver</button>
+          <button class="req-btn req-btn-secondary" onclick="openModal('messageModal')"><i class="ti ti-message"></i> Message</button>
+        </div>
+      </div>
+
+      <!-- COMPLETED REQUEST 2 -->
+      <div class="req-card completed">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0848</div>
+          <span class="req-status completed"><i class="ti ti-check"></i> Completed</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">City Hospital Main Entrance</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Residential District Zone 7</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">9.1 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Duration</div>
+            <div class="detail-value">19 min</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Fare</div>
+            <div class="detail-value price">$18.40</div>
+          </div>
+        </div>
+
+        <div class="req-driver">
+          <div class="driver-avatar" style="background:linear-gradient(135deg,#FF6B6B,#FF5252)">RC</div>
+          <div class="driver-info">
+            <div class="driver-name">Robert Chen</div>
+            <div class="driver-vehicle">White Tesla • 4.7★</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-secondary" onclick="openModal('messageModal')"><i class="ti ti-message"></i> Message</button>
+          <button class="req-btn req-btn-secondary" onclick="openModal('receiptModal')"><i class="ti ti-receipt"></i> Receipt</button>
+        </div>
+      </div>
+
+      <!-- CANCELLED REQUEST -->
+      <div class="req-card cancelled">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0850</div>
+          <span class="req-status cancelled"><i class="ti ti-x"></i> Cancelled</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">Train Station South Exit</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Corporate Park Tower B</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">7.8 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Est. Duration</div>
+            <div class="detail-value">16 min</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Est. Fare</div>
+            <div class="detail-value price">$15.60</div>
+          </div>
+        </div>
+
+        <div class="req-driver">
+          <div class="driver-avatar" style="background:linear-gradient(135deg,var(--rd),#FF6B6B)">EK</div>
+          <div class="driver-info">
+            <div class="driver-name">Ekow Mensah</div>
+            <div class="driver-vehicle">Red Uber X • 4.6★</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-secondary" onclick="openModal('newRequestModal')"><i class="ti ti-redo"></i> New Request</button>
+          <button class="req-btn req-btn-secondary" onclick="openModal('detailsModal')"><i class="ti ti-receipt"></i> Details</button>
+        </div>
+      </div>
+
+      <!-- ACCEPTED REQUEST 2 -->
+      <div class="req-card accepted">
+        <div class="req-header">
+          <div class="req-id">#REQ-2024-0852</div>
+          <span class="req-status accepted"><i class="ti ti-car"></i> Accepted</span>
+        </div>
+        
+        <div class="req-route">
+          <div class="route-dot">
+            <div class="dot"></div>
+            <div class="route-line"></div>
+            <div class="dot end"></div>
+          </div>
+          <div class="route-info">
+            <div class="route-label">From</div>
+            <div class="route-text">International Convention Center</div>
+            <div class="route-label" style="margin-top:10px">To</div>
+            <div class="route-text">Five-Star Hotel Downtown</div>
+          </div>
+        </div>
+
+        <div class="req-details">
+          <div class="detail-item">
+            <div class="detail-label">Distance</div>
+            <div class="detail-value">6.4 km</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">ETA</div>
+            <div class="detail-value">5 min away</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">Fare</div>
+            <div class="detail-value price">$11.50</div>
+          </div>
+        </div>
+
+        <div class="req-driver">
+          <div class="driver-avatar" style="background:linear-gradient(135deg,#26A69A,#00897B)">NG</div>
+          <div class="driver-info">
+            <div class="driver-name">Sammi-Drumz</div>
+            <div class="driver-vehicle">Green Prius • 4.9★</div>
+          </div>
+        </div>
+
+        <div class="req-actions">
+          <button class="req-btn req-btn-primary"><i class="ti ti-map-pin"></i> Track Driver</button>
+          <button class="req-btn req-btn-secondary"><i class="ti ti-message"></i> Message</button>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </div>
+
+  <!-- HISTORY PAGE -->
+  <div class="page-section" id="page-history">
+    <div class="ph">
+      <div>
+        <h1>Trip History</h1>
+        <p class="ph-sub">View all your completed and past rides</p>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <div class="fchip active">All Trips</div>
+      <div class="fchip">Last 7 Days</div>
+      <div class="fchip">Last Month</div>
+      <div class="fchip">Older</div>
+    </div>
+    <div style="display:grid;gap:12px">
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;display:flex;gap:12px;cursor:pointer;transition:all .15s;align-items:center" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="flex:1">
+          <div style="font-weight:700;margin-bottom:3px">Marcus Khan • May 24, 2:45 PM</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:6px">Palm Beach Hotel → Airport Terminal 3</div>
+          <div style="display:flex;gap:10px;font-size:12px">
+            <span style="color:var(--t2)">12.5 km</span>
+            <span style="color:var(--t2)">24 min</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:var(--pr);margin-bottom:4px">$24.50</div>
+          <div style="background:var(--prf);color:var(--pr);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">Completed</div>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;display:flex;gap:12px;cursor:pointer;transition:all .15s;align-items:center" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="flex:1">
+          <div style="font-weight:700;margin-bottom:3px">Sofia Johnson • May 23, 6:15 PM</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:6px">Luxury Apartments → Beach Resort & Spa</div>
+          <div style="display:flex;gap:10px;font-size:12px">
+            <span style="color:var(--t2)">18.3 km</span>
+            <span style="color:var(--t2)">35 min</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:var(--pr);margin-bottom:4px">$32.75</div>
+          <div style="background:var(--prf);color:var(--pr);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">Completed</div>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;display:flex;gap:12px;cursor:pointer;transition:all .15s;align-items:center" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="flex:1">
+          <div style="font-weight:700;margin-bottom:3px">Robert Chen • May 22, 9:30 AM</div>
+          <div style="font-size:13px;color:var(--t2);margin-bottom:6px">City Hospital → Residential District Zone 7</div>
+          <div style="display:flex;gap:10px;font-size:12px">
+            <span style="color:var(--t2)">9.1 km</span>
+            <span style="color:var(--t2)">19 min</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:16px;font-weight:800;color:var(--pr);margin-bottom:4px">$18.40</div>
+          <div style="background:var(--prf);color:var(--pr);padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600">Completed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS PAGE -->
+  <div class="page-section" id="page-payments">
+    <div class="ph">
+      <div>
+        <h1>Payment Methods</h1>
+        <p class="ph-sub">Manage your payment methods and billing</p>
+      </div>
+      <div class="ph-r">
+        <button class="btn btn-p" onclick="openModal('addPaymentModal')"><i class="ti ti-plus"></i> Add Method</button>
+      </div>
+    </div>
+    <div style="display:grid;gap:14px;margin-top:20px">
+      <div style="background:var(--s1);border:2px solid var(--pr);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="background:var(--prf);width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px">💳</div>
+          <div>
+            <div style="font-weight:700">Visa Card</div>
+            <div style="font-size:13px;color:var(--t2)">•••• •••• •••• 4242</div>
+          </div>
+        </div>
+        <div style="background:var(--prf);color:var(--pr);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700">Default</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="background:var(--s2);width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px">🏦</div>
+          <div>
+            <div style="font-weight:700">Bank Account</div>
+            <div style="font-size:13px;color:var(--t2)">FCFA Account • •••• 7890</div>
+          </div>
+        </div>
+        <button class="btn btn-xs btn-o"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="background:var(--s2);width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px">📱</div>
+          <div>
+            <div style="font-weight:700">Mobile Money</div>
+            <div style="font-size:13px;color:var(--t2)">MTN • +237 677 112 233</div>
+          </div>
+        </div>
+        <button class="btn btn-xs btn-o"><i class="ti ti-trash"></i> Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="page-section" id="page-profile">
+    <div class="ph">
+      <div>
+        <h1>My Profile</h1>
+        <p class="ph-sub">Manage your account information</p>
+      </div>
+      <div class="ph-r">
+        <button class="btn btn-p" onclick="openModal('editProfileModal')"><i class="ti ti-edit"></i> Edit</button>
+      </div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:28px;margin-top:20px;text-align:center">
+      <div style="width:88px;height:88px;background:linear-gradient(135deg,var(--pr),var(--prd));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:700;color:#000;margin:0 auto 16px">AS</div>
+      <div style="font-size:22px;font-weight:800;margin-bottom:4px">Akia Samuel</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:4px">sammi7drums@gmail.com</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:20px">+237 675 611 728</div>
+      <div style="background:linear-gradient(135deg,var(--prf),rgba(0,212,106,.03));border:1px solid rgba(0,212,106,.2);border-radius:12px;padding:12px;display:inline-flex;align-items:center;gap:6px">
+        <span style="color:var(--go)">⭐</span>
+        <span style="font-weight:700">4.9 Rating</span>
+        <span style="color:var(--t2)">• 127 Rides</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page-section" id="page-settings">
+    <div class="ph">
+      <div>
+        <h1>Settings</h1>
+        <p class="ph-sub">Manage your preferences</p>
+      </div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:0;margin-top:20px;overflow:hidden">
+      <div style="padding:16px;border-bottom:1px solid var(--br);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600">Notifications</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:2px">Ride updates and promotions</div>
+        </div>
+        <div style="position:relative;width:46px;height:25px;cursor:pointer">
+          <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute" checked>
+          <div style="position:absolute;inset:0;background:var(--pr);border-radius:100px;transition:background .2s"></div>
+          <div style="position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;left:24px;pointer-events:none"></div>
+        </div>
+      </div>
+      <div style="padding:16px;border-bottom:1px solid var(--br);display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600">Location Services</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:2px">Improve ride matching</div>
+        </div>
+        <div style="position:relative;width:46px;height:25px;cursor:pointer">
+          <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute" checked>
+          <div style="position:absolute;inset:0;background:var(--pr);border-radius:100px;transition:background .2s"></div>
+          <div style="position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;left:24px;pointer-events:none"></div>
+        </div>
+      </div>
+      <div style="padding:16px;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-weight:600">Dark Mode</div>
+          <div style="font-size:12px;color:var(--t2);margin-top:2px">Currently enabled</div>
+        </div>
+        <div style="position:relative;width:46px;height:25px;cursor:pointer">
+          <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute" checked>
+          <div style="position:absolute;inset:0;background:var(--pr);border-radius:100px;transition:background .2s"></div>
+          <div style="position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;left:24px;pointer-events:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT PAGE -->
+  <div class="page-section" id="page-support">
+    <div class="ph">
+      <div>
+        <h1>Help & Support</h1>
+        <p class="ph-sub">Get help with your account and rides</p>
+      </div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:20px;margin-top:20px;margin-bottom:14px">
+      <input type="text" class="form-control" placeholder="Search help articles..." style="width:100%">
+    </div>
+    <div style="display:grid;gap:12px">
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div style="font-size:20px;flex-shrink:0">❓</div>
+          <div style="flex:1">
+            <div style="font-weight:700;margin-bottom:4px">How do I book a ride?</div>
+            <div style="font-size:12px;color:var(--t2)">Learn the simple steps to request your first ride</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--t3);flex-shrink:0"></i>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div style="font-size:20px;flex-shrink:0">🚗</div>
+          <div style="flex:1">
+            <div style="font-weight:700;margin-bottom:4px">What's the difference between ride types?</div>
+            <div style="font-size:12px;color:var(--t2)">Understand Regular, Premium, and Shared options</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--t3);flex-shrink:0"></i>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div style="font-size:20px;flex-shrink:0">💳</div>
+          <div style="flex:1">
+            <div style="font-weight:700;margin-bottom:4px">Payment & Billing Issues</div>
+            <div style="font-size:12px;color:var(--t2)">Troubleshoot payment problems</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--t3);flex-shrink:0"></i>
+        </div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='var(--br2)'" onmouseout="this.style.borderColor='var(--br)'">
+        <div style="display:flex;align-items:start;gap:12px">
+          <div style="font-size:20px;flex-shrink:0">😞</div>
+          <div style="flex:1">
+            <div style="font-weight:700;margin-bottom:4px">Report a Problem</div>
+            <div style="font-size:12px;color:var(--t2)">Contact our support team directly</div>
+          </div>
+          <i class="ti ti-chevron-right" style="color:var(--t3);flex-shrink:0"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- NEW REQUEST MODAL -->
+<div class="modal-overlay" id="newRequestModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Request a New Ride</div>
+      <button class="modal-close" onclick="closeModal('newRequestModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Pickup Location</label>
+        <input type="text" class="form-control" placeholder="Where are you?">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Dropoff Location</label>
+        <input type="text" class="form-control" placeholder="Where to?">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Ride Type</label>
+          <select class="form-control">
+            <option>Regular</option>
+            <option>Premium</option>
+            <option>Shared</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">When</label>
+          <select class="form-control">
+            <option>Now</option>
+            <option>Schedule</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Special Instructions (optional)</label>
+        <textarea class="form-control" placeholder="Add a note for your driver..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-o" onclick="closeModal('newRequestModal')">Cancel</button>
+      <button class="btn btn-p">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- MESSAGE MODAL -->
+<div class="modal-overlay" id="messageModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Message Driver</div>
+      <button class="modal-close" onclick="closeModal('messageModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--s2);border-radius:12px;padding:12px;margin-bottom:16px;max-height:200px;overflow-y:auto">
+        <div style="margin-bottom:10px">
+          <div style="font-size:11px;color:var(--t2);margin-bottom:3px">Marcus Khan · 2:15 PM</div>
+          <div style="background:var(--pr);color:#000;padding:8px 12px;border-radius:10px;display:inline-block;font-size:13px">I'm 5 minutes away!</div>
+        </div>
+        <div style="margin-bottom:10px;text-align:right">
+          <div style="font-size:11px;color:var(--t2);margin-bottom:3px">You · 2:14 PM</div>
+          <div style="background:var(--s3);padding:8px 12px;border-radius:10px;display:inline-block;font-size:13px">Thank you!</div>
+        </div>
+      </div>
+      <textarea class="msg-input" placeholder="Type your message..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-o" onclick="closeModal('messageModal')">Close</button>
+      <button class="btn btn-p"><i class="ti ti-send"></i> Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECEIPT MODAL -->
+<div class="modal-overlay" id="receiptModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Trip Receipt</div>
+      <button class="modal-close" onclick="closeModal('receiptModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--s2);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Trip ID</div>
+          <div style="font-weight:700">#REQ-2024-0847</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Date & Time</div>
+          <div style="font-weight:700">May 24, 2:30 PM</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Distance</div>
+          <div style="font-weight:700">12.5 km</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Duration</div>
+          <div style="font-weight:700">24 minutes</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Base Fare</div>
+          <div style="font-weight:700">$18.00</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Service Fee</div>
+          <div style="font-weight:700">$2.50</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px">
+          <div style="font-size:14px;font-weight:700">Total</div>
+          <div style="font-size:18px;font-weight:800;color:var(--pr)">$24.50</div>
+        </div>
+      </div>
+      <div style="background:var(--prf);border:1px solid rgba(0,212,106,.2);border-radius:10px;padding:10px 12px;font-size:12px;text-align:center;margin-bottom:16px">
+        ✓ Payment completed on May 24
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-o"><i class="ti ti-download"></i> Download</button>
+      <button class="btn btn-p"><i class="ti ti-mail"></i> Email</button>
+    </div>
+  </div>
+</div>
+
+<!-- CALL MODAL -->
+<div class="modal-overlay" id="callModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Call Driver</div>
+      <button class="modal-close" onclick="closeModal('callModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:40px 20px">
+      <div style="background:var(--gof);width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px">📞</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">Calling...</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:24px">Connecting to driver +237 677 112 233</div>
+      <button class="btn btn-r" onclick="closeModal('callModal')"><i class="ti ti-phone-off"></i> End Call</button>
+    </div>
+  </div>
+</div>
+
+<!-- CANCEL REQUEST MODAL -->
+<div class="modal-overlay" id="cancelModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Cancel Ride</div>
+      <button class="modal-close" onclick="closeModal('cancelModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--rdf);border:1px solid rgba(255,71,87,.2);border-radius:12px;padding:12px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px">
+        <div style="font-size:20px;flex-shrink:0">⚠️</div>
+        <div style="font-size:13px">Cancelling now will cost $2.50. Are you sure?</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reason for cancellation</label>
+        <select class="form-control">
+          <option>Select a reason...</option>
+          <option>Driver took wrong route</option>
+          <option>Driver not responding</option>
+          <option>Changed my mind</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-o" onclick="closeModal('cancelModal')">Keep Ride</button>
+      <button class="btn btn-r"><i class="ti ti-x"></i> Cancel Anyway</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACK DRIVER MODAL -->
+<div class="modal-overlay" id="trackModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Track Driver</div>
+      <button class="modal-close" onclick="closeModal('trackModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--s2);border-radius:12px;width:100%;height:280px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;color:var(--t3)">
+        <div style="text-align:center">
+          <div style="font-size:48px;margin-bottom:8px">🗺️</div>
+          <div>Live Map View</div>
+        </div>
+      </div>
+      <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="width:40px;height:40px;background:linear-gradient(135deg,var(--pu),#7C3AED);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff">SJ</div>
+          <div>
+            <div style="font-weight:700">Sofia Johnson</div>
+            <div style="font-size:12px;color:var(--t2)">Black BMW • 4.9★</div>
+          </div>
+        </div>
+        <div style="font-size:13px;color:var(--t2);padding:8px 0;border-bottom:1px solid var(--br);margin-bottom:8px">5 min away • 2.3 km</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-o" style="flex:1"><i class="ti ti-phone"></i> Call</button>
+          <button class="btn btn-o" style="flex:1"><i class="ti ti-message"></i> Message</button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-o" onclick="closeModal('trackModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS MODAL -->
+<div class="modal-overlay" id="detailsModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Request Details</div>
+      <button class="modal-close" onclick="closeModal('detailsModal')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--rdf);border:1px solid rgba(255,71,87,.2);border-radius:12px;padding:12px;margin-bottom:16px">
+        <div style="font-weight:700;margin-bottom:4px">Request Cancelled</div>
+        <div style="font-size:12px;color:var(--t2)">Cancelled on May 23 at 6:45 PM</div>
+      </div>
+      <div style="background:var(--s2);border-radius:12px;padding:14px;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:600;color:var(--t3);text-transform:uppercase;margin-bottom:8px">Route</div>
+        <div style="margin-bottom:10px">
+          <div style="font-size:12px;color:var(--t2);margin-bottom:3px">From</div>
+          <div style="font-weight:700">Train Station South Exit</div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:var(--t2);margin-bottom:3px">To</div>
+          <div style="font-weight:700">Corporate Park Tower B</div>
+        </div>
+      </div>
+      <div style="background:var(--s2);border-radius:12px;padding:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Distance</div>
+          <div style="font-weight:700">7.8 km</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--br)">
+          <div style="font-size:12px;color:var(--t2)">Est. Duration</div>
+          <div style="font-weight:700">16 min</div>
+        </div>
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-size:12px;color:var(--t2)">Est. Fare</div>
+          <div style="font-weight:700;color:var(--pr)">$15.60</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-p" onclick="closeModal('detailsModal');openModal('newRequestModal')"><i class="ti ti-redo"></i> Book Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Page titles mapping
+const pageData = {
+  'requests': {title: 'Ride Requests', icon: 'ti-layout-dashboard'},
+  'history': {title: 'Trip History', icon: 'ti-history'},
+  'payments': {title: 'Payment Methods', icon: 'ti-wallet'},
+  'profile': {title: 'My Profile', icon: 'ti-user'},
+  'settings': {title: 'Settings', icon: 'ti-settings'},
+  'support': {title: 'Help & Support', icon: 'ti-help'}
+};
+
+// Page switching function
+function switchPage(pageId){
+  // Hide all page sections
+  document.querySelectorAll('.page-section').forEach(section=>{
+    section.classList.remove('active');
+  });
+  
+  // Show selected page
+  document.getElementById('page-'+pageId).classList.add('active');
+  
+  // Update sidebar active state
+  document.querySelectorAll('.ni').forEach(ni=>{
+    ni.classList.remove('on');
+  });
+  document.querySelector(`[data-page="${pageId}"]`).classList.add('on');
+  
+  // Update topbar label
+  document.getElementById('pg-label').textContent = pageData[pageId].title;
+  
+  // Close sidebar on mobile
+  if(window.innerWidth < 1024){
+    document.getElementById('sidebar').classList.remove('show');
+    document.getElementById('sb-back').classList.remove('show');
+  }
+}
+
+// Sidebar & Navigation
+function toggleSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  const topbar = document.getElementById('topbar');
+  const main = document.querySelector('.main');
+  
+  sidebar.classList.toggle('collapsed');
+  topbar.classList.toggle('collapsed');
+  main.classList.toggle('collapsed');
+}
+
+function toggleCollapseSidebar(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+  document.getElementById('topbar').classList.toggle('collapsed');
+  document.querySelector('.main').classList.toggle('collapsed');
+}
+
+document.getElementById('sb-back').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.remove('show');
+  document.getElementById('sb-back').classList.remove('show');
+});
+
+// Modal Functions
+function openModal(modalId){
+  document.getElementById(modalId).classList.add('show');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(modalId){
+  document.getElementById(modalId).classList.remove('show');
+  document.body.style.overflow='auto';
+}
+
+// Close modal when clicking outside
+document.querySelectorAll('.modal-overlay').forEach(overlay=>{
+  overlay.addEventListener('click',function(e){
+    if(e.target===this){
+      closeModal(this.id);
+    }
+  });
+});
+
+// Filter chips
+document.querySelectorAll('.fchip').forEach(chip=>{
+  chip.addEventListener('click',function(){
+    document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Close modals on Escape key
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    document.querySelectorAll('.modal-overlay.show').forEach(modal=>{
+      closeModal(modal.id);
+    });
+  }
+});
+</script>
+
+</body>
+</html>

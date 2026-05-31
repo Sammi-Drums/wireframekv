@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Kivo Rides — Driver App</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+:root{--bg:#06101C;--s1:#0C1828;--s2:#132237;--s3:#1A2F48;--pr:#00D46A;--prd:#00A854;--prf:rgba(0,212,106,.14);--go:#FFB800;--gof:rgba(255,184,0,.14);--rd:#FF4757;--rdf:rgba(255,71,87,.14);--bl:#2196F3;--blf:rgba(33,150,243,.14);--tx:#EDF3FF;--t2:#7E94B0;--t3:#3A506B;--br:rgba(255,255,255,.07);--br2:rgba(255,255,255,.13);--r:14px;--rl:20px}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#01080F;font-family:'DM Sans',system-ui,sans-serif;color:var(--tx)}
+h1,h2,h3{font-family:'Syne',sans-serif}
+input,button,select{font-family:inherit}
+::-webkit-scrollbar{width:0}
+
+.phone-wrap{display:flex;min-height:100vh;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 0%,#0A1E35,#01080F 70%);padding:20px}
+.phone{position:relative;width:390px;height:844px;background:var(--bg);border-radius:50px;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.06),0 0 0 10px rgba(0,0,0,.4),0 40px 100px rgba(0,0,0,.9);flex-shrink:0}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:126px;height:37px;background:#000;border-radius:100px;z-index:900}
+.statusbar{position:absolute;top:0;left:0;right:0;height:54px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px;z-index:50;font-size:11.5px;font-weight:600;pointer-events:none}
+.sb-time{font-size:14px;font-weight:700}
+.sb-icons{display:flex;align-items:center;gap:5px}
+
+/* BOTTOM NAV */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:84px;background:var(--s1);border-top:1px solid var(--br);display:none;align-items:flex-start;justify-content:space-around;padding:10px 8px 20px;z-index:100}
+.bnav.show{display:flex}
+.bni{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;cursor:pointer;padding:6px 4px;border-radius:14px}
+.bni .ti{font-size:24px;color:var(--t3);transition:color .15s}
+.bni span{font-size:10px;font-weight:500;color:var(--t3);transition:color .15s}
+.bni-dot{width:4px;height:4px;border-radius:50%;background:var(--pr);opacity:0}
+.bni.on .ti,.bni.on span{color:var(--pr)}
+.bni.on .bni-dot{opacity:1}
+
+/* SCREENS */
+.screen{position:absolute;inset:0;background:var(--bg);overflow-y:auto;overflow-x:hidden;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateX(24px);padding-bottom:84px;-webkit-overflow-scrolling:touch}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.screen.no-nav{padding-bottom:0}
+
+/* SPLASH */
+#sc-splash{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-bottom:0}
+.splash-logo{width:88px;height:88px;background:var(--pr);border-radius:26px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:30px;color:#000;margin-bottom:20px;box-shadow:0 0 60px rgba(0,212,106,.4);animation:logopulse 2s ease-in-out infinite}
+@keyframes logopulse{0%,100%{box-shadow:0 0 50px rgba(0,212,106,.4)}50%{box-shadow:0 0 80px rgba(0,212,106,.7)}}
+.splash-prog{width:180px;height:3px;background:var(--s2);border-radius:100px;overflow:hidden;margin-top:60px}
+.splash-fill{height:100%;background:var(--pr);border-radius:100px;animation:load 2.3s ease forwards}
+@keyframes load{from{width:0}to{width:100%}}
+
+/* LOGIN */
+#sc-login{display:flex;flex-direction:column;padding:0}
+.login-hero{height:220px;background:linear-gradient(160deg,#001608 0%,#052010 40%,var(--bg) 100%);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:28px}
+.login-logo{width:58px;height:58px;background:var(--pr);border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:#000;margin-bottom:12px;box-shadow:0 8px 30px rgba(0,212,106,.35)}
+.login-body{padding:26px 24px;flex:1;display:flex;flex-direction:column}
+.flbl{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:7px;letter-spacing:.02em}
+.ph-row{display:flex;margin-bottom:6px}
+.cc{background:var(--s2);border:1px solid var(--br2);border-right:none;border-radius:12px 0 0 12px;padding:14px 12px;font-size:14px;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.cc .ti{color:var(--t3);font-size:13px}
+.inp{background:var(--s2);border:1px solid var(--br2);border-radius:0 12px 12px 0;padding:14px 16px;font-size:15px;color:var(--tx);width:100%;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--pr)}
+.inp::placeholder{color:var(--t3)}
+.inp-full{background:var(--s2);border:1.5px solid var(--br2);border-radius:12px;padding:14px 16px;font-size:15px;color:var(--tx);width:100%;outline:none;transition:border-color .15s;margin-bottom:14px;display:block}
+.inp-full:focus{border-color:var(--pr)}
+.inp-full::placeholder{color:var(--t3)}
+.inp-note{font-size:12px;color:var(--t3);margin-bottom:24px}
+.btn-full{width:100%;padding:16px;background:var(--pr);color:#000;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+.btn-full:active{transform:scale(.98);background:var(--prd)}
+.btn-out{background:transparent;border:1.5px solid var(--br2);color:var(--t2);margin-top:10px}
+.divider{display:flex;align-items:center;gap:12px;color:var(--t3);font-size:12px;margin:14px 0}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--br)}
+.tos{text-align:center;font-size:11.5px;color:var(--t3);margin-top:auto;padding-top:14px}
+.tos b{color:var(--t2)}
+
+/* OTP */
+.screen-hdr{display:flex;align-items:center;gap:12px;padding:16px 20px;padding-top:60px;flex-shrink:0}
+.bk{width:38px;height:38px;background:var(--s2);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:18px;flex-shrink:0}
+.otp-grid{display:flex;gap:10px;justify-content:center;margin:28px 0 10px}
+.otp-box{width:48px;height:56px;background:var(--s2);border:1.5px solid var(--br2);border-radius:14px;text-align:center;font-size:24px;font-weight:700;color:var(--tx);outline:none;transition:border-color .15s}
+.otp-box:focus{border-color:var(--pr);background:var(--s3)}
+
+/* HOME OFFLINE */
+#sc-home-offline{display:flex;flex-direction:column}
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:62px 22px 16px}
+.notif-btn{width:38px;height:38px;background:var(--s2);border:1px solid var(--br);border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--t2);font-size:18px;position:relative}
+.nred{position:absolute;top:8px;right:8px;width:7px;height:7px;background:var(--rd);border-radius:50%;border:2px solid var(--s2)}
+.offline-hero{margin:0 20px 18px;background:linear-gradient(135deg,#0E1D30,#162A40);border:1px solid rgba(255,184,0,.15);border-radius:var(--rl);padding:22px;text-align:center}
+.offline-orb{width:76px;height:76px;border-radius:50%;background:rgba(255,184,0,.08);border:2px dashed rgba(255,184,0,.35);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:30px}
+.go-btn{width:100%;padding:15px;background:var(--pr);color:#000;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Syne',sans-serif}
+.qs-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:0 20px 18px}
+.qs{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:12px}
+.qs-v{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:2px}
+.qs-l{font-size:10.5px;color:var(--t2)}
+.sec-ttl{font-size:13.5px;font-weight:600;padding:0 22px 10px}
+.tip-list{padding:0 20px;display:flex;flex-direction:column;gap:10px}
+.tip{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:13px;display:flex;align-items:center;gap:11px}
+.tip-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+
+/* HOME ONLINE */
+#sc-home-online{display:flex;flex-direction:column;padding:0}
+.map-area{flex:1;position:relative;overflow:hidden;min-height:440px}
+.map-svg{width:100%;height:100%;display:block}
+.status-pill{position:absolute;top:60px;left:18px;background:rgba(6,16,28,.88);backdrop-filter:blur(12px);border:1px solid rgba(0,212,106,.3);border-radius:100px;padding:9px 18px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.online-dot{width:8px;height:8px;border-radius:50%;background:var(--pr);box-shadow:0 0 6px var(--pr);animation:blink 1.6s ease-in-out infinite;flex-shrink:0}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.bottom-sheet{background:var(--s1);border-radius:24px 24px 0 0;border-top:1px solid var(--br);padding:18px 22px 10px;flex-shrink:0}
+.handle{width:38px;height:4px;background:var(--t3);border-radius:100px;margin:0 auto 16px}
+.wait-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.spin-ring{width:42px;height:42px;border-radius:50%;border:2.5px solid var(--pr);border-top-color:transparent;animation:spin .85s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.today-row{display:flex;gap:10px;margin-bottom:14px}
+.tod{flex:1;background:var(--s2);border-radius:12px;padding:10px 12px}
+.tod-v{font-size:15px;font-weight:700;margin-bottom:1px}
+.tod-l{font-size:11px;color:var(--t2)}
+.offline-btn{width:100%;padding:14px;background:var(--rdf);color:var(--rd);font-size:14px;font-weight:600;border-radius:12px;border:1px solid rgba(255,71,87,.25);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* INCOMING REQUEST */
+#req-overlay{position:absolute;inset:0;background:rgba(1,8,15,.72);backdrop-filter:blur(6px);z-index:400;display:none;flex-direction:column;justify-content:flex-end}
+#req-overlay.show{display:flex}
+.req-sheet{background:var(--s1);border-radius:28px 28px 0 0;border-top:1px solid var(--br2);padding:22px 22px 34px;animation:sheetup .35s cubic-bezier(.32,.72,0,1)}
+@keyframes sheetup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.req-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.timer-wrap{position:relative;width:58px;height:58px;flex-shrink:0}
+.t-bg{fill:none;stroke:var(--s3);stroke-width:4}
+.t-fg{fill:none;stroke:var(--pr);stroke-width:4;stroke-linecap:round;transform-origin:center;transform:rotate(-90deg);transition:stroke-dashoffset .9s linear}
+.t-txt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:var(--pr)}
+.req-user{display:flex;align-items:center;gap:11px;background:var(--s2);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.ru-av{width:42px;height:42px;border-radius:50%;background:var(--blf);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--bl);flex-shrink:0}
+.req-route{background:var(--s2);border-radius:14px;padding:13px 15px;margin-bottom:14px}
+.rp{display:flex;align-items:flex-start;gap:10px;padding:5px 0}
+.rp:first-child{padding-bottom:9px;border-bottom:1px dashed var(--br2)}
+.rp:last-child{padding-top:9px}
+.rp-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.rp-lbl{font-size:10.5px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.req-chips{display:flex;gap:10px;margin-bottom:18px}
+.rchip{flex:1;background:var(--s2);border-radius:11px;padding:9px 12px;text-align:center}
+.rchip-v{font-size:15px;font-weight:700;margin-bottom:2px}
+.rchip-l{font-size:11px;color:var(--t2)}
+.req-btns{display:flex;gap:12px}
+.btn-decline{flex:1;padding:15px;background:var(--rdf);color:var(--rd);border:1px solid rgba(255,71,87,.25);border-radius:14px;font-size:14px;font-weight:600;cursor:pointer}
+.btn-accept{flex:2;padding:15px;background:var(--pr);color:#000;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+
+/* TRIP SCREENS */
+#sc-trip-pickup,#sc-trip-arrived,#sc-trip-enroute,#sc-trip-complete{display:flex;flex-direction:column;padding:0}
+.trip-map{flex:1;position:relative;overflow:hidden;min-height:260px}
+.trip-map svg{width:100%;height:100%;display:block}
+.map-back{position:absolute;top:58px;left:14px}
+.map-badge{position:absolute;top:58px;right:14px;background:rgba(6,16,28,.88);backdrop-filter:blur(8px);border:1px solid var(--br2);border-radius:12px;padding:7px 14px;font-size:12px;display:flex;align-items:center;gap:5px}
+.trip-bottom{background:var(--s1);border-radius:24px 24px 0 0;border-top:1px solid var(--br);padding:18px 20px;flex-shrink:0}
+.pass-row{display:flex;align-items:center;gap:11px;background:var(--s2);border-radius:13px;padding:11px 13px;margin-bottom:14px}
+.pass-av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.pass-name{font-size:14px;font-weight:600}
+.pass-sub{font-size:12px;color:var(--t2);margin-top:1px}
+.pass-acts{margin-left:auto;display:flex;gap:7px;flex-shrink:0}
+.pact{width:35px;height:35px;border-radius:10px;border:1px solid var(--br2);background:var(--s1);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--t2)}
+.addr-item{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--br)}
+.addr-item:last-of-type{border-bottom:none}
+.addr-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.addr-lbl{font-size:10.5px;color:var(--t2);font-weight:500;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.addr-txt{font-size:13.5px;font-weight:500}
+.eta-strip{display:flex;gap:10px;margin:14px 0}
+.eta-c{flex:1;background:var(--s2);border-radius:12px;padding:10px 12px}
+.eta-v{font-size:16px;font-weight:700;margin-bottom:1px}
+.eta-l{font-size:11px;color:var(--t2)}
+.trip-btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Syne',sans-serif;transition:transform .15s}
+.trip-btn:active{transform:scale(.98)}
+.btn-yellow{background:var(--go);color:#000}
+.btn-green{background:var(--pr);color:#000}
+.btn-red{background:var(--rd);color:#fff}
+.fare-box{background:linear-gradient(135deg,var(--prf),rgba(0,212,106,.03));border:1px solid rgba(0,212,106,.2);border-radius:14px;padding:13px 17px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.fm-big{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--pr)}
+.arrived-alert{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--prf);border:1px solid rgba(0,212,106,.2);border-radius:13px;margin-bottom:14px}
+
+/* TRIP COMPLETE */
+.tc-hero{display:flex;flex-direction:column;align-items:center;padding:58px 22px 20px;text-align:center}
+.tc-check{width:78px;height:78px;background:var(--prf);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--pr);margin-bottom:14px;animation:pop .4s cubic-bezier(.36,.07,.19,.97)}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+.tc-sum{margin:0 20px 14px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);overflow:hidden}
+.tc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 17px;border-bottom:1px solid var(--br);font-size:13.5px}
+.tc-row:last-child{border-bottom:none}
+.tc-earn{margin:0 20px 16px;background:linear-gradient(135deg,var(--prf),rgba(0,212,106,.03));border:1px solid rgba(0,212,106,.2);border-radius:14px;padding:17px;text-align:center}
+.tc-earn-v{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:var(--pr);margin:5px 0}
+.stars-row{display:flex;justify-content:center;gap:8px;font-size:28px;margin:14px 0 6px;cursor:pointer}
+.tc-pad{padding:0 20px 16px}
+
+/* TRIPS LIST */
+#sc-trips{padding:54px 0 0}
+.trip-card{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:13px 15px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.trip-card:hover{border-color:var(--br2)}
+.tc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.tc-type{display:flex;align-items:center;gap:5px;font-size:12.5px;color:var(--t2)}
+.tc-amt{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--pr)}
+.tc-rt{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--t2);margin-bottom:3px}
+.tc-rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.tc-bot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;padding-top:9px;border-top:1px solid var(--br)}
+.bdg{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600}
+.bdg::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor}
+.bok{background:rgba(0,212,106,.14);color:var(--pr)}
+.bcn{background:rgba(255,71,87,.14);color:var(--rd)}
+.period-row{display:flex;gap:8px;padding:0 18px 14px;overflow-x:auto}
+.pchip{padding:7px 17px;border-radius:100px;font-size:12.5px;color:var(--t2);background:var(--s1);border:1px solid var(--br);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s}
+.pchip.on{background:var(--prf);color:var(--pr);border-color:rgba(0,212,106,.35)}
+
+/* EARNINGS */
+#sc-earnings{padding:54px 0 0}
+.earn-hero{margin:0 18px 14px;background:linear-gradient(135deg,var(--prf),rgba(0,212,106,.03));border:1px solid rgba(0,212,106,.2);border-radius:var(--rl);padding:20px}
+.earn-big{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--pr);line-height:1;margin:6px 0 4px}
+.earn-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 18px 14px}
+.est{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:12px;text-align:center}
+.est-v{font-size:17px;font-weight:700;margin-bottom:2px}
+.est-l{font-size:10.5px;color:var(--t2)}
+.chart-card{margin:0 18px 14px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px}
+.breakdown{margin:0 18px 14px;background:var(--s1);border:1px solid var(--br);border-radius:var(--rl);padding:16px}
+.bd-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--br);font-size:13px}
+.bd-row:last-child{border-bottom:none}
+.bd-l{color:var(--t2)}
+.payout-wrap{padding:0 18px 14px}
+.payout-btn{width:100%;padding:15px;background:var(--pr);color:#000;font-size:15px;font-weight:700;border-radius:14px;border:none;cursor:pointer;font-family:'Syne',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* PROFILE */
+#sc-profile{padding:54px 0 0}
+.prof-hero{padding:18px 22px;text-align:center;margin-bottom:4px}
+.prof-av{width:78px;height:78px;border-radius:50%;background:linear-gradient(135deg,var(--pr),var(--prd));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:26px;color:#000;margin:0 auto 12px;box-shadow:0 6px 24px rgba(0,212,106,.35)}
+.prof-rating{display:inline-flex;align-items:center;gap:6px;background:var(--gof);color:var(--go);padding:6px 14px;border-radius:100px;font-size:13px;font-weight:600}
+.prof-stats{display:flex;gap:10px;padding:0 20px 18px}
+.ps-c{flex:1;background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:12px;text-align:center}
+.ps-v{font-size:18px;font-weight:800;margin-bottom:2px}
+.ps-l{font-size:10.5px;color:var(--t2)}
+.status-row{display:flex;align-items:center;justify-content:space-between;padding:14px 22px;background:var(--s1);border-top:1px solid var(--br);border-bottom:1px solid var(--br);margin-bottom:14px}
+.str-dot{width:10px;height:10px;border-radius:50%;background:var(--pr);box-shadow:0 0 6px var(--pr);flex-shrink:0}
+.str-dot.off{background:var(--rd);box-shadow:0 0 6px var(--rd)}
+.sw-wrap{position:relative;width:46px;height:25px;cursor:pointer}
+.sw-wrap input{opacity:0;width:0;height:0;position:absolute}
+.sw-track{position:absolute;inset:0;background:var(--s3);border-radius:100px;transition:background .2s}
+.sw-wrap input:checked+.sw-track{background:var(--pr)}
+.sw-knob{position:absolute;top:3px;left:3px;width:19px;height:19px;background:#fff;border-radius:50%;transition:left .2s;pointer-events:none}
+.sw-wrap input:checked~.sw-knob{left:24px}
+.prof-sec{padding:0 18px;margin-bottom:10px}
+.prof-sec-ttl{font-size:10.5px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;padding:0 2px}
+.prof-list{background:var(--s1);border:1px solid var(--br);border-radius:14px;overflow:hidden}
+.prof-item{display:flex;align-items:center;gap:11px;padding:13px 15px;border-bottom:1px solid var(--br);cursor:pointer;transition:background .15s}
+.prof-item:last-child{border-bottom:none}
+.prof-item:active{background:var(--s2)}
+.pi-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.pi-name{font-size:14px;font-weight:500;flex:1}
+.pi-sub{font-size:11.5px;color:var(--t2);margin-top:1px}
+.pi-arr{color:var(--t3);font-size:16px}
+.doc-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px}
+.dt-ok{background:rgba(0,212,106,.14);color:var(--pr)}
+.dt-warn{background:rgba(255,71,87,.14);color:var(--rd)}
+
+/* NOTIFICATIONS */
+#sc-notifs,#sc-docs,#sc-payout{padding:54px 0 0}
+.notif-item{background:var(--s1);border:1px solid var(--br);border-radius:14px;padding:13px 15px;margin-bottom:10px;display:flex;gap:11px}
+.ni-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.payout-form{padding:0 20px 20px}
+.pav-hero{background:var(--prf);border:1px solid rgba(0,212,106,.2);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px}
+.pav-big{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--pr);margin:6px 0 4px}
+.pm-opt{background:var(--s2);border:1.5px solid var(--br2);border-radius:12px;padding:13px;display:flex;align-items:center;gap:11px;cursor:pointer;margin-bottom:10px;transition:border-color .15s}
+.pm-opt.sel{border-color:var(--pr);background:var(--prf)}
+
+/* TOAST */
+.toast{position:absolute;bottom:100px;left:18px;right:18px;background:var(--pr);color:#000;font-weight:600;font-size:13px;padding:13px 17px;border-radius:14px;z-index:1000;animation:tslide .3s ease;box-shadow:0 8px 24px rgba(0,212,106,.4);display:flex;align-items:center;gap:8px}
+.toast.err{background:var(--rd);color:#fff;box-shadow:0 8px 24px rgba(255,71,87,.4)}
+@keyframes tslide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:440px){
+  .phone-wrap{padding:0;align-items:flex-start}
+  .phone{width:100%;height:100vh;border-radius:0;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="phone-wrap"><div class="phone" id="phone">
+<div class="island"></div>
+<div class="statusbar"><span class="sb-time" id="sb-time">9:41</span><div class="sb-icons"><i class="ti ti-signal-4g"></i><i class="ti ti-wifi"></i><i class="ti ti-battery-3"></i></div></div>
+
+<!-- ══ SPLASH ══ -->
+<div class="screen no-nav active" id="sc-splash">
+  <div class="splash-logo">KR</div>
+  <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:6px">Kivo <span style="color:var(--pr)">Rides</span></div>
+  <div style="font-size:14px;color:var(--t2)">Driver Partner App</div>
+  <div class="splash-prog"><div class="splash-fill"></div></div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div class="screen no-nav" id="sc-login">
+  <div class="login-hero">
+    <div class="login-logo">KR</div>
+    <div style="font-size:21px;font-weight:800;margin-bottom:4px">Welcome, Driver</div>
+    <div style="font-size:13px;color:var(--t2)">Sign in to start earning with Kivo</div>
+  </div>
+  <div class="login-body">
+    <div class="flbl">Phone Number</div>
+    <div class="ph-row">
+      <div class="cc">🇨🇲 +237 <i class="ti ti-chevron-down"></i></div>
+      <input class="inp" type="tel" placeholder="6XX XXX XXX" maxlength="9" id="ph-inp">
+    </div>
+    <div class="inp-note" style="margin-bottom:22px">We'll send a one-time verification code</div>
+    <button class="btn-full" onclick="doLogin()">Continue <i class="ti ti-arrow-right"></i></button>
+    <div class="divider">or</div>
+    <button class="btn-full btn-out" onclick="toast('Google sign-in not available in demo')"><i class="ti ti-brand-google"></i> Sign in with Google</button>
+    <div class="tos">By continuing you agree to Kivo's <b>Terms of Service</b> and <b>Privacy Policy</b></div>
+  </div>
+</div>
+
+<!-- ══ OTP ══ -->
+<div class="screen no-nav" id="sc-otp">
+  <div class="screen-hdr"><div class="bk" onclick="goTo('sc-login')"><i class="ti ti-arrow-left"></i></div><div><div style="font-size:17px;font-weight:800">Enter Code</div></div></div>
+  <div style="padding:0 24px">
+    <p style="font-size:13.5px;color:var(--t2);margin-bottom:4px">We sent a 6-digit code to</p>
+    <p style="font-size:15px;font-weight:700;margin-bottom:26px">+237 677 112 233</p>
+    <div class="otp-grid">
+      <input class="otp-box" type="tel" maxlength="1" id="o1" oninput="onxt(this,'o2')">
+      <input class="otp-box" type="tel" maxlength="1" id="o2" oninput="onxt(this,'o3')">
+      <input class="otp-box" type="tel" maxlength="1" id="o3" oninput="onxt(this,'o4')">
+      <input class="otp-box" type="tel" maxlength="1" id="o4" oninput="onxt(this,'o5')">
+      <input class="otp-box" type="tel" maxlength="1" id="o5" oninput="onxt(this,'o6')">
+      <input class="otp-box" type="tel" maxlength="1" id="o6" oninput="onxt(this,null)">
+    </div>
+    <p style="font-size:12.5px;color:var(--t3);text-align:center;margin-bottom:26px">Didn't get it? <span style="color:var(--pr);cursor:pointer;font-weight:600" onclick="toast('Code resent!')">Resend code</span></p>
+    <button class="btn-full" onclick="verifyOTP()">Verify & Continue</button>
+  </div>
+</div>
+
+<!-- ══ HOME: OFFLINE ══ -->
+<div class="screen" id="sc-home-offline">
+  <div class="top-bar">
+    <div><div style="font-size:12px;color:var(--t2)">Good morning,</div><div style="font-size:17px;font-weight:800">Etienne Kamga 👋</div></div>
+    <div class="notif-btn" onclick="goTo('sc-notifs')"><i class="ti ti-bell"></i><span class="nred"></span></div>
+  </div>
+  <div class="offline-hero">
+    <div class="offline-orb">😴</div>
+    <div style="font-size:18px;font-weight:700;color:var(--go);margin-bottom:6px">You're Offline</div>
+    <div style="font-size:13px;color:var(--t2)">Go online to receive trip requests in Douala</div>
+    <button class="go-btn" onclick="goOnline()"><i class="ti ti-player-play"></i> Go Online & Start Earning</button>
+  </div>
+  <div class="qs-grid">
+    <div class="qs"><div class="qs-v" style="color:var(--pr)">7</div><div class="qs-l">Trips today</div></div>
+    <div class="qs"><div class="qs-v" style="color:var(--go)">42.4K</div><div class="qs-l">FCFA today</div></div>
+    <div class="qs"><div class="qs-v" style="color:var(--bl)">4.9★</div><div class="qs-l">My rating</div></div>
+  </div>
+  <div class="sec-ttl">Tips to Earn More</div>
+  <div class="tip-list">
+    <div class="tip"><div class="tip-ico" style="background:var(--gof);color:var(--go)">⏰</div><div><div style="font-size:13.5px;font-weight:600">Peak Hours 7–9 AM &amp; 5–8 PM</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Earn 40% more during surge pricing</div></div></div>
+    <div class="tip"><div class="tip-ico" style="background:var(--prf);color:var(--pr)">🏆</div><div><div style="font-size:13.5px;font-weight:600">3 more trips → 2,000 FCFA bonus</div><div style="font-size:12px;color:var(--t2);margin-top:2px">You're at 7 trips today. Almost there!</div></div></div>
+    <div class="tip"><div class="tip-ico" style="background:var(--blf);color:var(--bl)">📍</div><div><div style="font-size:13.5px;font-weight:600">High demand in Akwa right now</div><div style="font-size:12px;color:var(--t2);margin-top:2px">Faster ride matches in this zone</div></div></div>
+  </div>
+</div>
+
+<!-- ══ HOME: ONLINE ══ -->
+<div class="screen" id="sc-home-online" style="padding-bottom:0">
+  <div class="map-area">
+    <svg class="map-svg" viewBox="0 0 390 460">
+      <rect width="390" height="460" fill="#06101C"/>
+      <path d="M0 180 Q80 170 150 196 Q230 222 310 210 Q355 203 390 218" fill="none" stroke="#122A48" stroke-width="22"/><path d="M0 180 Q80 170 150 196 Q230 222 310 210 Q355 203 390 218" fill="none" stroke="#0F2040" stroke-width="15"/>
+      <path d="M182 0 Q186 80 172 165 Q158 242 162 340 Q166 400 168 460" fill="none" stroke="#122A48" stroke-width="18"/><path d="M182 0 Q186 80 172 165 Q158 242 162 340 Q166 400 168 460" fill="none" stroke="#0F2040" stroke-width="12"/>
+      <path d="M80 0 Q83 100 90 200 Q98 300 94 460" fill="none" stroke="#0D1E35" stroke-width="12"/>
+      <path d="M282 0 Q290 120 296 250 Q300 350 298 460" fill="none" stroke="#0D1E35" stroke-width="12"/>
+      <path d="M0 80 Q120 76 200 82 Q280 88 390 78" fill="none" stroke="#0D1E35" stroke-width="10"/>
+      <path d="M0 320 Q100 316 200 324 Q300 330 390 318" fill="none" stroke="#0D1E35" stroke-width="10"/>
+      <rect x="20" y="40" width="82" height="44" rx="4" fill="#091929" opacity=".7"/>
+      <text x="61" y="67" text-anchor="middle" font-size="9" fill="#2A4060" font-family="DM Sans,sans-serif">AKWA</text>
+      <rect x="202" y="252" width="96" height="54" rx="4" fill="#091929" opacity=".7"/>
+      <text x="250" y="282" text-anchor="middle" font-size="9" fill="#2A4060" font-family="DM Sans,sans-serif">BONANJO</text>
+      <rect x="280" y="60" width="78" height="42" rx="4" fill="#091929" opacity=".7"/>
+      <text x="319" y="86" text-anchor="middle" font-size="9" fill="#2A4060" font-family="DM Sans,sans-serif">MAKEPE</text>
+      <!-- Nearby drivers -->
+      <circle cx="90" cy="130" r="4" fill="#00D46A" opacity=".35"/><circle cx="90" cy="130" r="9" fill="#00D46A" opacity=".1"/>
+      <circle cx="298" cy="162" r="4" fill="#00D46A" opacity=".35"/><circle cx="298" cy="162" r="9" fill="#00D46A" opacity=".1"/>
+      <circle cx="218" cy="298" r="4" fill="#00D46A" opacity=".35"/>
+      <!-- Me -->
+      <circle cx="175" cy="195" r="16" fill="rgba(0,212,106,.18)" id="pulse-ring"/>
+      <circle cx="175" cy="195" r="9" fill="#00D46A"/>
+      <circle cx="175" cy="195" r="4" fill="#fff"/>
+    </svg>
+    <div class="status-pill"><span class="online-dot"></span>Online · Douala</div>
+  </div>
+  <div class="bottom-sheet">
+    <div class="handle"></div>
+    <div class="today-row">
+      <div class="tod"><div class="tod-v">7</div><div class="tod-l">Trips today</div></div>
+      <div class="tod"><div class="tod-v" style="color:var(--pr)">42,400</div><div class="tod-l">FCFA earned</div></div>
+      <div class="tod"><div class="tod-v" style="color:var(--go)">4.9★</div><div class="tod-l">Rating</div></div>
+    </div>
+    <div class="wait-row"><div class="spin-ring"></div><div><div style="font-size:16px;font-weight:700">Waiting for a ride request…</div><div style="font-size:12.5px;color:var(--t2);margin-top:2px">Move to Akwa for faster matching</div></div></div>
+    <button class="offline-btn" onclick="goOffline()"><i class="ti ti-player-pause"></i> Go Offline</button>
+  </div>
+</div>
+
+<!-- ══ TRIP: GOING TO PICKUP ══ -->
+<div class="screen no-nav" id="sc-trip-pickup" style="padding-bottom:0">
+  <div class="trip-map">
+    <svg width="100%" height="100%" viewBox="0 0 390 320">
+      <rect width="390" height="320" fill="#06101C"/>
+      <path d="M0 178 Q120 166 200 178 Q280 190 390 174" fill="none" stroke="#122A48" stroke-width="20"/><path d="M0 178 Q120 166 200 178 Q280 190 390 174" fill="none" stroke="#0F2040" stroke-width="14"/>
+      <path d="M194 0 Q190 80 188 160 Q186 240 185 320" fill="none" stroke="#0D1E35" stroke-width="16"/>
+      <path d="M185 245 Q162 218 142 190 Q120 162 106 122" fill="none" stroke="#00D46A" stroke-width="3.5" stroke-dasharray="8 5" opacity=".9"/>
+      <circle cx="185" cy="245" r="12" fill="rgba(0,212,106,.22)"/><circle cx="185" cy="245" r="7.5" fill="#00D46A"/><circle cx="185" cy="245" r="3" fill="#fff"/>
+      <circle cx="106" cy="112" r="13" fill="rgba(255,184,0,.25)"/><circle cx="106" cy="112" r="6" fill="var(--go)"/>
+      <rect x="54" y="64" width="108" height="26" rx="8" fill="rgba(6,16,28,.88)" stroke="rgba(255,184,0,.4)" stroke-width="1"/>
+      <text x="108" y="81" text-anchor="middle" font-size="9.5" fill="rgba(255,255,255,.8)" font-family="DM Sans,sans-serif">Pickup · 0.8 km</text>
+    </svg>
+    <div class="map-back"><div class="bk" onclick="cancelTrip()"><i class="ti ti-x"></i></div></div>
+    <div class="map-badge" style="color:var(--go)"><i class="ti ti-navigation" style="color:var(--pr)"></i>0.8 km away</div>
+  </div>
+  <div class="trip-bottom">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="background:var(--gof);color:var(--go);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:600">🏍 Moto</span><span style="font-size:13px;color:var(--t2)">Going to pickup</span></div>
+    <div class="pass-row">
+      <div class="pass-av" style="background:var(--blf);color:var(--bl)">NC</div>
+      <div style="flex:1"><div class="pass-name">Nathalie Che</div><div class="pass-sub">⭐ 4.8 · Regular rider</div></div>
+      <div class="pass-acts"><div class="pact" onclick="toast('Calling Nathalie…')"><i class="ti ti-phone"></i></div><div class="pact" onclick="toast('Opening chat…')"><i class="ti ti-message"></i></div></div>
+    </div>
+    <div>
+      <div class="addr-item"><div class="addr-dot" style="background:var(--go)"></div><div><div class="addr-lbl">Pickup</div><div class="addr-txt">Bonamoussadi, Rue 123</div></div></div>
+      <div class="addr-item"><div class="addr-dot" style="background:var(--rd)"></div><div><div class="addr-lbl">Drop-off</div><div class="addr-txt">Aéroport IBA Douala</div></div></div>
+    </div>
+    <div class="eta-strip">
+      <div class="eta-c"><div class="eta-v" style="color:var(--go)">3 min</div><div class="eta-l">ETA to pickup</div></div>
+      <div class="eta-c"><div class="eta-v">12.8 km</div><div class="eta-l">Trip distance</div></div>
+      <div class="eta-c"><div class="eta-v" style="color:var(--pr)">3,500</div><div class="eta-l">Est. fare (XAF)</div></div>
+    </div>
+    <button class="trip-btn btn-yellow" onclick="arrivedPickup()"><i class="ti ti-map-pin"></i> I've Arrived at Pickup</button>
+  </div>
+</div>
+
+<!-- ══ TRIP: ARRIVED ══ -->
+<div class="screen no-nav" id="sc-trip-arrived" style="padding-bottom:0">
+  <div class="trip-map">
+    <svg width="100%" height="100%" viewBox="0 0 390 260">
+      <rect width="390" height="260" fill="#06101C"/>
+      <path d="M0 130 Q190 120 390 134" fill="none" stroke="#122A48" stroke-width="20"/><path d="M0 130 Q190 120 390 134" fill="none" stroke="#0F2040" stroke-width="14"/>
+      <circle cx="190" cy="128" r="18" fill="rgba(0,212,106,.16)"/><circle cx="190" cy="128" r="10" fill="#00D46A"/><circle cx="190" cy="128" r="4" fill="#fff"/>
+      <rect x="118" y="76" width="148" height="30" rx="10" fill="rgba(6,16,28,.92)" stroke="rgba(0,212,106,.4)" stroke-width="1.5"/>
+      <text x="192" y="96" text-anchor="middle" font-size="11" fill="#00D46A" font-family="DM Sans,sans-serif" font-weight="600">✓ Arrived at pickup</text>
+    </svg>
+    <div class="map-back"><div class="bk" onclick="cancelTrip()"><i class="ti ti-x"></i></div></div>
+  </div>
+  <div class="trip-bottom">
+    <div class="arrived-alert"><i class="ti ti-circle-check" style="color:var(--pr);font-size:20px;flex-shrink:0"></i><div><div style="font-size:14px;font-weight:700;color:var(--pr)">Arrived! Passenger notified.</div><div style="font-size:12px;color:var(--t2);margin-top:1px">Wait up to 3 minutes. Tap Start Trip when they board.</div></div></div>
+    <div class="pass-row">
+      <div class="pass-av" style="background:var(--blf);color:var(--bl)">NC</div>
+      <div style="flex:1"><div class="pass-name">Nathalie Che</div><div class="pass-sub">⭐ 4.8 · Walking towards you</div></div>
+      <div class="pass-acts"><div class="pact" onclick="toast('Calling Nathalie…')"><i class="ti ti-phone"></i></div></div>
+    </div>
+    <div class="eta-strip">
+      <div class="eta-c"><div class="eta-v" style="color:var(--pr)">3,500</div><div class="eta-l">Est. fare (XAF)</div></div>
+      <div class="eta-c"><div class="eta-v">12.8 km</div><div class="eta-l">Trip distance</div></div>
+      <div class="eta-c"><div class="eta-v" style="color:var(--go)">~32 min</div><div class="eta-l">Duration</div></div>
+    </div>
+    <button class="trip-btn btn-green" onclick="startTrip()"><i class="ti ti-player-play"></i> Start Trip</button>
+  </div>
+</div>
+
+<!-- ══ TRIP: EN ROUTE ══ -->
+<div class="screen no-nav" id="sc-trip-enroute" style="padding-bottom:0">
+  <div class="trip-map">
+    <svg width="100%" height="100%" viewBox="0 0 390 295">
+      <rect width="390" height="295" fill="#06101C"/>
+      <path d="M0 202 Q80 192 162 198 Q242 205 312 190 Q355 183 390 190" fill="none" stroke="#122A48" stroke-width="20"/><path d="M0 202 Q80 192 162 198 Q242 205 312 190 Q355 183 390 190" fill="none" stroke="#0F2040" stroke-width="14"/>
+      <path d="M190 295 Q188 220 186 148 Q184 78 182 0" fill="none" stroke="#0D1E35" stroke-width="16"/>
+      <path d="M188 256 Q172 212 153 170 Q130 126 108 90 Q88 58 68 38" fill="none" stroke="#00D46A" stroke-width="4" opacity=".95" stroke-linecap="round"/>
+      <circle cx="188" cy="256" r="12" fill="rgba(0,212,106,.22)"/><circle cx="188" cy="256" r="8" fill="#00D46A"/><circle cx="188" cy="256" r="3.5" fill="#fff"/>
+      <circle cx="68" cy="38" r="11" fill="rgba(255,71,87,.25)"/><circle cx="68" cy="38" r="6" fill="var(--rd)"/>
+      <rect x="14" y="8" width="136" height="24" rx="8" fill="rgba(6,16,28,.88)" stroke="rgba(255,71,87,.35)" stroke-width="1"/>
+      <text x="82" y="24" text-anchor="middle" font-size="9.5" fill="rgba(255,255,255,.8)" font-family="DM Sans,sans-serif">✈ Aéroport IBA Douala</text>
+    </svg>
+    <div style="position:absolute;top:58px;left:14px"><div style="background:rgba(0,212,106,.9);border-radius:12px;padding:6px 14px;font-size:12px;font-weight:700;color:#000;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:#000;display:inline-block"></span>On Trip</div></div>
+    <div style="position:absolute;top:58px;right:14px"><div style="background:rgba(6,16,28,.88);backdrop-filter:blur(8px);border:1px solid var(--br2);border-radius:12px;padding:7px 14px;text-align:center"><div style="font-size:16px;font-weight:700" id="eta-min">22 min</div><div style="font-size:10px;color:var(--t2)">remaining</div></div></div>
+  </div>
+  <div class="trip-bottom">
+    <div class="fare-box">
+      <div><div style="font-size:11.5px;color:var(--t2);margin-bottom:3px">Fare Meter</div><div class="fm-big" id="fare-disp">0</div><div style="font-size:11px;color:var(--t2)">FCFA · running</div></div>
+      <div style="text-align:right"><div style="font-size:11.5px;color:var(--t2);margin-bottom:3px">Passenger</div><div style="font-size:14px;font-weight:600">Nathalie C.</div><div style="font-size:12px;color:var(--go)">⭐ 4.8</div></div>
+    </div>
+    <div class="eta-strip">
+      <div class="eta-c"><div class="eta-v" id="dist-left">10.2 km</div><div class="eta-l">Distance left</div></div>
+      <div class="eta-c"><div class="eta-v" id="eta-left">22 min</div><div class="eta-l">ETA</div></div>
+      <div class="eta-c"><div class="eta-v" style="color:var(--pr)">3,500</div><div class="eta-l">Total est.</div></div>
+    </div>
+    <div class="addr-item" style="margin-bottom:12px"><div class="addr-dot" style="background:var(--rd)"></div><div><div class="addr-lbl">Destination</div><div class="addr-txt">Aéroport IBA Douala</div></div></div>
+    <button class="trip-btn btn-red" onclick="completeTrip()"><i class="ti ti-flag-3"></i> Complete Trip</button>
+  </div>
+</div>
+
+<!-- ══ TRIP: COMPLETE ══ -->
+<div class="screen no-nav" id="sc-trip-complete" style="padding-bottom:0">
+  <div class="tc-hero">
+    <div class="tc-check"><i class="ti ti-check"></i></div>
+    <div style="font-size:22px;font-weight:800;margin-bottom:5px">Trip Completed! 🎉</div>
+    <div style="font-size:13px;color:var(--t2)">Great job, Etienne. Nathalie has been dropped off.</div>
+    <div style="font-size:13px;color:var(--t2);margin-top:10px">How was your passenger?</div>
+    <div class="stars-row" id="star-row"><span onclick="rateStar(1)">☆</span><span onclick="rateStar(2)">☆</span><span onclick="rateStar(3)">☆</span><span onclick="rateStar(4)">☆</span><span onclick="rateStar(5)">☆</span></div>
+  </div>
+  <div class="tc-sum">
+    <div class="tc-row"><span style="color:var(--t2)">Distance</span><span style="font-weight:600">12.8 km</span></div>
+    <div class="tc-row"><span style="color:var(--t2)">Duration</span><span style="font-weight:600">31 minutes</span></div>
+    <div class="tc-row"><span style="color:var(--t2)">Ride type</span><span style="font-weight:600">🏍 Moto</span></div>
+    <div class="tc-row"><span style="color:var(--t2)">Fare charged</span><span style="font-weight:600">3,500 FCFA</span></div>
+    <div class="tc-row"><span style="color:var(--t2)">Platform fee (15%)</span><span style="font-weight:600;color:var(--rd)">− 525 FCFA</span></div>
+  </div>
+  <div class="tc-earn">
+    <div style="font-size:12px;color:var(--t2)">Your Earnings</div>
+    <div class="tc-earn-v">2,975 FCFA</div>
+    <div style="font-size:11.5px;color:var(--t2)">Added to balance · Next payout May 28</div>
+  </div>
+  <div class="tc-pad">
+    <button class="btn-full" style="margin-bottom:10px" onclick="doneTrip()"><i class="ti ti-player-play"></i> Continue Driving</button>
+    <button class="btn-full btn-out" onclick="goTo('sc-earnings')">View My Earnings</button>
+  </div>
+</div>
+
+<!-- ══ TRIPS HISTORY ══ -->
+<div class="screen" id="sc-trips">
+  <div class="top-bar" style="padding-bottom:12px"><div style="font-size:18px;font-weight:800">My Trips</div></div>
+  <div class="period-row">
+    <span class="pchip on" onclick="psel(this)">Today</span>
+    <span class="pchip" onclick="psel(this)">This Week</span>
+    <span class="pchip" onclick="psel(this)">This Month</span>
+    <span class="pchip" onclick="psel(this)">All Time</span>
+  </div>
+  <div style="padding:0 18px">
+    <div class="trip-card" onclick="toast('Trip #TR-8821 opened')"><div class="tc-top"><div class="tc-type"><i class="ti ti-motorbike"></i>Moto · Today 14:32</div><div class="tc-amt">2,975 XAF</div></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--pr)"></div>Bonamoussadi, Rue 123</div><div style="width:1px;height:7px;background:var(--br);margin:2px 0 2px 3px"></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--rd)"></div>Aéroport IBA Douala</div><div class="tc-bot"><span class="bdg bok">Completed</span><span style="font-size:11px;color:var(--t3)">12.8 km · 31 min</span></div></div>
+    <div class="trip-card" onclick="toast('Trip #TR-8820 opened')"><div class="tc-top"><div class="tc-type"><i class="ti ti-motorbike"></i>Moto · Today 13:15</div><div class="tc-amt">1,020 XAF</div></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--pr)"></div>Akwa Centre, Rue Joss</div><div style="width:1px;height:7px;background:var(--br);margin:2px 0 2px 3px"></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--rd)"></div>Bonaberi, Rue du Port</div><div class="tc-bot"><span class="bdg bok">Completed</span><span style="font-size:11px;color:var(--t3)">4.2 km · 18 min</span></div></div>
+    <div class="trip-card" onclick="toast('Trip #TR-8819 opened')"><div class="tc-top"><div class="tc-type"><i class="ti ti-motorbike"></i>Moto · Today 12:44</div><div class="tc-amt">680 XAF</div></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--pr)"></div>Makepe Missoke</div><div style="width:1px;height:7px;background:var(--br);margin:2px 0 2px 3px"></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--rd)"></div>Ange Raphael</div><div class="tc-bot"><span class="bdg bok">Completed</span><span style="font-size:11px;color:var(--t3)">3.0 km · 12 min</span></div></div>
+    <div class="trip-card" onclick="toast('Trip #TR-8818 opened')"><div class="tc-top"><div class="tc-type"><i class="ti ti-motorbike"></i>Moto · Today 11:20</div><div class="tc-amt">—</div></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--pr)"></div>Deido Market</div><div style="width:1px;height:7px;background:var(--br);margin:2px 0 2px 3px"></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--rd)"></div>Ndokoti</div><div class="tc-bot"><span class="bdg bcn">Cancelled</span><span style="font-size:11px;color:var(--t3)">Passenger no-show</span></div></div>
+    <div class="trip-card" onclick="toast('Trip #TR-8817 opened')"><div class="tc-top"><div class="tc-type"><i class="ti ti-motorbike"></i>Moto · Yesterday 16:05</div><div class="tc-amt">1,190 XAF</div></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--pr)"></div>Bassa Industrial</div><div style="width:1px;height:7px;background:var(--br);margin:2px 0 2px 3px"></div><div class="tc-rt"><div class="tc-rdot" style="background:var(--rd)"></div>Douala Port</div><div class="tc-bot"><span class="bdg bok">Completed</span><span style="font-size:11px;color:var(--t3)">5.7 km · 22 min</span></div></div>
+  </div>
+</div>
+
+<!-- ══ EARNINGS ══ -->
+<div class="screen" id="sc-earnings">
+  <div class="top-bar" style="padding-bottom:12px">
+    <div style="font-size:18px;font-weight:800">Earnings</div>
+    <div class="notif-btn" onclick="goTo('sc-payout')" style="background:var(--prf);border-color:rgba(0,212,106,.3)"><i class="ti ti-send" style="color:var(--pr)"></i></div>
+  </div>
+  <div class="period-row">
+    <span class="pchip" onclick="psel(this);updateEarnings('today')">Today</span>
+    <span class="pchip on" onclick="psel(this);updateEarnings('week')">This Week</span>
+    <span class="pchip" onclick="psel(this);updateEarnings('month')">This Month</span>
+  </div>
+  <div class="earn-hero">
+    <div style="font-size:11px;color:var(--t2);text-transform:uppercase;letter-spacing:.07em;font-weight:600">Total Earned</div>
+    <div class="earn-big" id="e-val">824,500 FCFA</div>
+    <div style="font-size:13px;color:var(--pr)" id="e-chg">↑ 14% vs last week</div>
+  </div>
+  <div class="earn-stats">
+    <div class="est"><div class="est-v" id="e-trips">142</div><div class="est-l">Trips</div></div>
+    <div class="est"><div class="est-v" id="e-avg">5,806</div><div class="est-l">Avg/Trip</div></div>
+    <div class="est"><div class="est-v" id="e-hrs">62h</div><div class="est-l">Online hrs</div></div>
+  </div>
+  <div class="chart-card">
+    <div style="font-size:14px;font-weight:600;margin-bottom:12px">Weekly Overview</div>
+    <canvas id="earn-chart" height="120"></canvas>
+  </div>
+  <div class="breakdown">
+    <div style="font-size:14px;font-weight:600;margin-bottom:8px">Breakdown</div>
+    <div class="bd-row"><span class="bd-l">Trip Revenue (Gross)</span><span style="font-weight:600">970,588 FCFA</span></div>
+    <div class="bd-row"><span class="bd-l">Platform Fee (15%)</span><span style="font-weight:600;color:var(--rd)">− 145,588 FCFA</span></div>
+    <div class="bd-row"><span class="bd-l">Trip Bonuses</span><span style="font-weight:600;color:var(--go)">+ 8,000 FCFA</span></div>
+    <div class="bd-row" style="border-top:2px solid var(--br2);margin-top:4px;padding-top:14px"><span style="font-weight:700">Net Earnings</span><span style="font-weight:800;color:var(--pr);font-size:15px">824,500 FCFA</span></div>
+  </div>
+  <div class="payout-wrap">
+    <button class="payout-btn" onclick="goTo('sc-payout')"><i class="ti ti-send"></i> Request Payout</button>
+  </div>
+</div>
+
+<!-- ══ PROFILE ══ -->
+<div class="screen" id="sc-profile">
+  <div style="padding-top:54px">
+    <div class="prof-hero">
+      <div class="prof-av">EK</div>
+      <div style="font-size:20px;font-weight:800;margin-bottom:3px">Etienne Kamga</div>
+      <div style="font-size:13px;color:var(--t2);margin-bottom:10px">+237 677 112 233 · Douala</div>
+      <div class="prof-rating"><i class="ti ti-star-filled"></i> 4.9 · 142 trips</div>
+    </div>
+    <div class="prof-stats">
+      <div class="ps-c"><div class="ps-v" style="color:var(--pr)">142</div><div class="ps-l">Trips</div></div>
+      <div class="ps-c"><div class="ps-v" style="color:var(--go)">4.9★</div><div class="ps-l">Rating</div></div>
+      <div class="ps-c"><div class="ps-v" style="color:var(--bl)">97%</div><div class="ps-l">Acceptance</div></div>
+    </div>
+    <div class="status-row">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="str-dot off" id="pd"></div>
+        <div><div style="font-size:14.5px;font-weight:600" id="pt">Offline</div><div style="font-size:12px;color:var(--t2)" id="ps">Tap to go online</div></div>
+      </div>
+      <label class="sw-wrap"><input type="checkbox" id="ptog" onchange="profToggle()"><div class="sw-track"></div><div class="sw-knob"></div></label>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-sec-ttl">Account</div>
+      <div class="prof-list">
+        <div class="prof-item" onclick="toast('Personal info opened')"><div class="pi-ico" style="background:var(--blf);color:var(--bl)"><i class="ti ti-user"></i></div><div style="flex:1"><div class="pi-name">Personal Information</div><div class="pi-sub">Name, phone, emergency contact</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+        <div class="prof-item" onclick="toast('Vehicle details opened')"><div class="pi-ico" style="background:var(--gof);color:var(--go)"><i class="ti ti-motorbike"></i></div><div style="flex:1"><div class="pi-name">My Vehicle</div><div class="pi-sub">Honda CB150 · LT 2022-BK4</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+        <div class="prof-item" onclick="goTo('sc-docs')"><div class="pi-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-file-certificate"></i></div><div style="flex:1"><div class="pi-name">Documents</div><div class="pi-sub">License, insurance, ID</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+      </div>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-sec-ttl">Finance</div>
+      <div class="prof-list">
+        <div class="prof-item" onclick="goTo('sc-earnings')"><div class="pi-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-chart-bar"></i></div><div style="flex:1"><div class="pi-name">Earnings</div><div class="pi-sub">824,500 FCFA this period</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+        <div class="prof-item" onclick="goTo('sc-payout')"><div class="pi-ico" style="background:var(--gof);color:var(--go)"><i class="ti ti-cash"></i></div><div style="flex:1"><div class="pi-name">Payout</div><div class="pi-sub">MTN MoMo · · · · 4421</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+      </div>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-sec-ttl">Support</div>
+      <div class="prof-list">
+        <div class="prof-item" onclick="toast('Support chat opened')"><div class="pi-ico" style="background:var(--blf);color:var(--bl)"><i class="ti ti-headset"></i></div><div style="flex:1"><div class="pi-name">Help &amp; Support</div><div class="pi-sub">Chat, call, or email us</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+        <div class="prof-item" onclick="toast('FAQ opened')"><div class="pi-ico" style="background:var(--s2);color:var(--t2)"><i class="ti ti-book-2"></i></div><div style="flex:1"><div class="pi-name">FAQ</div></div><i class="ti ti-chevron-right pi-arr"></i></div>
+      </div>
+    </div>
+    <div class="prof-sec" style="padding-bottom:20px">
+      <div class="prof-list">
+        <div class="prof-item" onclick="doLogout()"><div class="pi-ico" style="background:var(--rdf);color:var(--rd)"><i class="ti ti-logout"></i></div><div class="pi-name" style="color:var(--rd)">Sign Out</div><i class="ti ti-chevron-right pi-arr"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ NOTIFICATIONS ══ -->
+<div class="screen no-nav" id="sc-notifs">
+  <div class="screen-hdr"><div class="bk" onclick="goBack()"><i class="ti ti-arrow-left"></i></div><div style="font-size:17px;font-weight:800">Notifications</div></div>
+  <div style="padding:0 18px">
+    <div class="notif-item"><div class="ni-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-trophy"></i></div><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">Bonus Unlocked! 🏆</div><div style="font-size:12.5px;color:var(--t2)">You completed 10 trips and earned a 2,000 FCFA bonus!</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Today · 13:45</div></div></div>
+    <div class="notif-item"><div class="ni-ico" style="background:var(--gof);color:var(--go)"><i class="ti ti-trending-up"></i></div><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">Surge Pricing Active</div><div style="font-size:12.5px;color:var(--t2)">1.4× surge pricing now active in Bonanjo and Akwa areas.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Today · 07:15</div></div></div>
+    <div class="notif-item"><div class="ni-ico" style="background:var(--blf);color:var(--bl)"><i class="ti ti-cash"></i></div><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">Payout Processed ✓</div><div style="font-size:12.5px;color:var(--t2)">824,500 FCFA sent to your MTN MoMo account ending in 4421.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">Yesterday · 10:30</div></div></div>
+    <div class="notif-item"><div class="ni-ico" style="background:var(--rdf);color:var(--rd)"><i class="ti ti-alert-triangle"></i></div><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">License Expiring Soon</div><div style="font-size:12.5px;color:var(--t2)">Your driver's license expires in 30 days. Renew to stay active.</div><div style="font-size:11px;color:var(--t3);margin-top:4px">2 days ago</div></div></div>
+    <div class="notif-item"><div class="ni-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-star"></i></div><div><div style="font-size:14px;font-weight:600;margin-bottom:3px">New Rating Received</div><div style="font-size:12.5px;color:var(--t2)">Marie-Claire F. gave you 5 stars: "Very professional driver!"</div><div style="font-size:11px;color:var(--t3);margin-top:4px">3 days ago</div></div></div>
+  </div>
+</div>
+
+<!-- ══ DOCUMENTS ══ -->
+<div class="screen no-nav" id="sc-docs">
+  <div class="screen-hdr"><div class="bk" onclick="goBack()"><i class="ti ti-arrow-left"></i></div><div style="font-size:17px;font-weight:800">My Documents</div></div>
+  <div style="padding:0 18px">
+    <div class="prof-list" style="margin-bottom:14px">
+      <div class="prof-item"><div class="pi-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-id-badge-2"></i></div><div style="flex:1"><div class="pi-name">National ID Card</div><div class="pi-sub">Expires: Dec 2028</div></div><span class="doc-tag dt-ok">Verified</span></div>
+      <div class="prof-item"><div class="pi-ico" style="background:var(--gof);color:var(--go)"><i class="ti ti-license"></i></div><div style="flex:1"><div class="pi-name">Driver's License</div><div class="pi-sub">Expires: Jun 2026 ⚠️</div></div><span class="doc-tag dt-warn">Expiring</span></div>
+      <div class="prof-item"><div class="pi-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-shield-check"></i></div><div style="flex:1"><div class="pi-name">Vehicle Insurance</div><div class="pi-sub">Honda CB150 · Expires: Mar 2027</div></div><span class="doc-tag dt-ok">Verified</span></div>
+      <div class="prof-item"><div class="pi-ico" style="background:var(--prf);color:var(--pr)"><i class="ti ti-camera"></i></div><div style="flex:1"><div class="pi-name">Profile Photo</div><div class="pi-sub">Clear face photo required</div></div><span class="doc-tag dt-ok">Approved</span></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--gof);border:1px solid rgba(255,184,0,.25);border-radius:12px;margin-bottom:16px"><i class="ti ti-alert-triangle" style="color:var(--go);font-size:18px;flex-shrink:0"></i><div style="font-size:13px;color:var(--go)">License expires in 30 days. Renew to avoid suspension.</div></div>
+    <button class="btn-full" onclick="toast('Upload screen opened')"><i class="ti ti-upload"></i> Upload New Document</button>
+  </div>
+</div>
+
+<!-- ══ PAYOUT ══ -->
+<div class="screen no-nav" id="sc-payout">
+  <div class="screen-hdr"><div class="bk" onclick="goBack()"><i class="ti ti-arrow-left"></i></div><div style="font-size:17px;font-weight:800">Request Payout</div></div>
+  <div class="payout-form">
+    <div class="pav-hero">
+      <div style="font-size:12px;color:var(--t2);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Available Balance</div>
+      <div class="pav-big">824,500 FCFA</div>
+      <div style="font-size:11.5px;color:var(--t2)">Next auto-payout: May 28, 2026</div>
+    </div>
+    <div class="flbl" style="margin-bottom:8px">Payout Amount</div>
+    <input class="inp-full" type="number" value="824500" placeholder="Enter amount (FCFA)">
+    <div class="flbl" style="margin-bottom:8px">Payout Method</div>
+    <div class="pm-opt sel"><span style="font-size:22px">📱</span><div style="flex:1"><div style="font-size:14px;font-weight:600">MTN Mobile Money</div><div style="font-size:12px;color:var(--t2)">+237 677 112 233</div></div><i class="ti ti-circle-check" style="color:var(--pr);font-size:20px"></i></div>
+    <div class="pm-opt" style="opacity:.55"><span style="font-size:22px">🟠</span><div style="flex:1"><div style="font-size:14px;font-weight:600">Orange Money</div><div style="font-size:12px;color:var(--t2)">Add account</div></div><i class="ti ti-plus" style="color:var(--t3);font-size:18px"></i></div>
+    <div style="background:var(--s1);border:1px solid var(--br);border-radius:12px;padding:14px;margin:16px 0;font-size:13px;color:var(--t2)">
+      <div style="display:flex;justify-content:space-between;padding:5px 0"><span>Requested</span><span style="font-weight:600;color:var(--tx)">824,500 FCFA</span></div>
+      <div style="display:flex;justify-content:space-between;padding:5px 0"><span>Processing time</span><span style="font-weight:600;color:var(--tx)">1–2 business days</span></div>
+      <div style="display:flex;justify-content:space-between;padding:10px 0 0;border-top:1px solid var(--br);margin-top:5px"><span style="font-weight:700;color:var(--tx)">You'll receive</span><span style="font-weight:800;color:var(--pr);font-size:15px">824,500 FCFA</span></div>
+    </div>
+    <button class="btn-full" onclick="doPayout()"><i class="ti ti-send"></i> Send Payout Request</button>
+  </div>
+</div>
+
+<!-- ══ INCOMING REQUEST OVERLAY ══ -->
+<div id="req-overlay">
+  <div class="req-sheet">
+    <div class="req-hdr">
+      <div><div style="font-size:19px;font-weight:800">New Trip Request!</div><div style="font-size:12.5px;color:var(--t2);margin-top:3px">Accept quickly before it expires</div></div>
+      <div class="timer-wrap">
+        <svg width="58" height="58" viewBox="0 0 58 58">
+          <circle class="t-bg" cx="29" cy="29" r="25"/>
+          <circle class="t-fg" id="t-ring" cx="29" cy="29" r="25" stroke-dasharray="157.08" stroke-dashoffset="0"/>
+        </svg>
+        <div class="t-txt" id="t-txt">25</div>
+      </div>
+    </div>
+    <div class="req-user">
+      <div class="ru-av">NC</div>
+      <div style="flex:1"><div style="font-size:14.5px;font-weight:600">Nathalie Che</div><div style="font-size:12px;color:var(--t2)">⭐ 4.8 · 23 trips · Regular rider</div></div>
+      <span style="background:var(--blf);color:var(--bl);border-radius:8px;padding:3px 10px;font-size:12px;font-weight:600">🏍 Moto</span>
+    </div>
+    <div class="req-route">
+      <div class="rp"><div class="rp-dot" style="background:var(--pr)"></div><div><div class="rp-lbl">Pickup · 0.8 km away</div><div style="font-size:13.5px;font-weight:500">Bonamoussadi, Rue 123</div></div></div>
+      <div class="rp"><div class="rp-dot" style="background:var(--rd)"></div><div><div class="rp-lbl">Drop-off</div><div style="font-size:13.5px;font-weight:500">Aéroport IBA Douala</div></div></div>
+    </div>
+    <div class="req-chips">
+      <div class="rchip"><div class="rchip-v">12.8 km</div><div class="rchip-l">Distance</div></div>
+      <div class="rchip"><div class="rchip-v" style="color:var(--pr)">3,500 XAF</div><div class="rchip-l">Est. fare</div></div>
+      <div class="rchip"><div class="rchip-v" style="color:var(--go)">~32 min</div><div class="rchip-l">Duration</div></div>
+    </div>
+    <div class="req-btns">
+      <button class="btn-decline" onclick="declineReq()">✕ Decline</button>
+      <button class="btn-accept" onclick="acceptReq()">✓ Accept Trip</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav" id="bnav">
+  <div class="bni on" id="bn-home" onclick="navTo('home')"><i class="ti ti-map"></i><span>Home</span><div class="bni-dot"></div></div>
+  <div class="bni" id="bn-trips" onclick="navTo('trips')"><i class="ti ti-receipt"></i><span>Trips</span><div class="bni-dot"></div></div>
+  <div class="bni" id="bn-earn" onclick="navTo('earn')"><i class="ti ti-coin"></i><span>Earnings</span><div class="bni-dot"></div></div>
+  <div class="bni" id="bn-prof" onclick="navTo('prof')"><i class="ti ti-user-circle"></i><span>Profile</span><div class="bni-dot"></div></div>
+</nav>
+
+</div></div>
+<script>
+/* ── State ── */
+let online=false,prevSc='sc-home-offline',curSc='sc-splash';
+let cdTimer=null,cdVal=25,fareInv=null,fareV=0;
+const CIRC=2*Math.PI*25; // r=25
+const NAV=['sc-home-offline','sc-home-online','sc-trips','sc-earnings','sc-profile'];
+
+/* ── Time ── */
+function tick(){const n=new Date(),h=n.getHours(),m=n.getMinutes();document.getElementById('sb-time').textContent=h+':'+(m<10?'0':'')+m}
+tick();setInterval(tick,15000);
+
+/* ── Navigate ── */
+function goTo(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
+  prevSc=curSc;curSc=id;
+  const bnav=document.getElementById('bnav');
+  bnav.classList.toggle('show',NAV.includes(id));
+  setNavActive(id);
+  if(id==='sc-earnings')setTimeout(drawChart,100);
+}
+function goBack(){goTo(prevSc)}
+function setNavActive(id){
+  const m={'sc-home-offline':'bn-home','sc-home-online':'bn-home','sc-trips':'bn-trips','sc-earnings':'bn-earn','sc-profile':'bn-prof'};
+  document.querySelectorAll('.bni').forEach(b=>b.classList.remove('on'));
+  const a=m[id];if(a)document.getElementById(a).classList.add('on');
+}
+function navTo(t){
+  const m={home:online?'sc-home-online':'sc-home-offline',trips:'sc-trips',earn:'sc-earnings',prof:'sc-profile'};
+  goTo(m[t]);
+}
+
+/* ── Splash ── */
+setTimeout(()=>goTo('sc-login'),2400);
+
+/* ── Login / OTP ── */
+function doLogin(){const v=document.getElementById('ph-inp').value;if(v.length<9){toastErr('Enter a valid 9-digit number');return;}goTo('sc-otp');}
+function onxt(el,nxt){if(el.value&&nxt)document.getElementById(nxt).focus();}
+function verifyOTP(){goTo('sc-home-offline')}
+
+/* ── Online/Offline ── */
+function goOnline(){online=true;goTo('sc-home-online');syncProfToggle(true);setTimeout(triggerReq,4000);}
+function goOffline(){online=false;goTo('sc-home-offline');syncProfToggle(false);}
+function syncProfToggle(v){const t=document.getElementById('ptog');if(t)t.checked=v;updateProfStatus(v);}
+function updateProfStatus(v){
+  const d=document.getElementById('pd'),t=document.getElementById('pt'),s=document.getElementById('ps');
+  if(d){d.classList.toggle('off',!v);}
+  if(t)t.textContent=v?'Online':'Offline';
+  if(s)s.textContent=v?'Receiving trip requests':'Tap to go online';
+}
+function profToggle(){const c=document.getElementById('ptog').checked;online=c;updateProfStatus(c);if(c)goOnline(),goTo('sc-profile');else goOffline(),goTo('sc-profile');}
+
+/* ── Request ── */
+function triggerReq(){if(!online)return;document.getElementById('req-overlay').style.display='flex';startCD();}
+function startCD(){cdVal=25;updateCD();clearInterval(cdTimer);cdTimer=setInterval(()=>{cdVal--;updateCD();if(cdVal<=0){clearInterval(cdTimer);hideReq();toastErr('Request expired');}},1000);}
+function updateCD(){
+  const t=document.getElementById('t-txt'),r=document.getElementById('t-ring');
+  if(t)t.textContent=cdVal;
+  if(r){const p=cdVal/25;r.style.strokeDashoffset=CIRC*(1-p);r.style.stroke=cdVal>10?'#00D46A':'#FF4757';if(t)t.style.color=cdVal>10?'var(--pr)':'var(--rd)';}
+}
+function hideReq(){document.getElementById('req-overlay').style.display='none';clearInterval(cdTimer);}
+function acceptReq(){hideReq();toast('Trip accepted!');setTimeout(()=>goTo('sc-trip-pickup'),700);}
+function declineReq(){hideReq();toastErr('Request declined');}
+
+/* ── Trip flow ── */
+function cancelTrip(){toast('Trip cancelled');online=true;goTo('sc-home-online');}
+function arrivedPickup(){goTo('sc-trip-arrived');toast('Passenger notified');}
+function startTrip(){goTo('sc-trip-enroute');runFare();}
+function runFare(){fareV=0;clearInterval(fareInv);let s=0;fareInv=setInterval(()=>{s++;fareV=Math.min(3500,Math.round(500+(s/60)*3000));const dr=Math.max(0,(10.2-(s/60)*5)).toFixed(1),er=Math.max(0,Math.round(22-(s/60)*22));const fd=document.getElementById('fare-disp'),dl=document.getElementById('dist-left'),el=document.getElementById('eta-left');if(fd)fd.textContent=fareV.toLocaleString();if(dl)dl.textContent=dr+' km';if(el)el.textContent=er+' min';},1000);}
+function completeTrip(){clearInterval(fareInv);goTo('sc-trip-complete');document.querySelectorAll('#star-row span').forEach(s=>s.textContent='☆');}
+function doneTrip(){online=true;goTo('sc-home-online');setTimeout(triggerReq,6000);}
+function rateStar(n){document.querySelectorAll('#star-row span').forEach((s,i)=>s.textContent=i<n?'⭐':'☆');if(n)setTimeout(()=>toast('Rating submitted!'),300);}
+
+/* ── Earnings ── */
+function psel(el){el.closest('.period-row,.earn-period').querySelectorAll('.pchip,.ep-chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function updateEarnings(p){
+  const d={today:{v:'42,400 FCFA',c:'↑ 12% vs yesterday · 8 trips',t:'8',a:'5,300',h:'9h'},week:{v:'824,500 FCFA',c:'↑ 14% vs last week · 142 trips',t:'142',a:'5,806',h:'62h'},month:{v:'3,218,000 FCFA',c:'↑ 8% vs last month · 561 trips',t:'561',a:'5,737',h:'248h'}};
+  const r=d[p]||d.week;
+  ['e-val','e-chg','e-trips','e-avg','e-hrs'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=[r.v,r.c,r.t,r.a,r.h][i];});
+  setTimeout(drawChart,50);
+}
+
+/* ── Chart ── */
+function drawChart(){
+  const c=document.getElementById('earn-chart');if(!c||!c.parentElement)return;
+  const dpr=window.devicePixelRatio||1,W=c.parentElement.clientWidth-32,H=120;
+  c.width=Math.round(W*dpr);c.height=Math.round(H*dpr);c.style.width=W+'px';c.style.height=H+'px';
+  const ctx=c.getContext('2d');ctx.scale(dpr,dpr);
+  const data=[92000,118000,105000,142000,128000,190000,49400];
+  const lbls=['M','T','W','T','F','S','T'];
+  const mx=Math.max(...data)*1.15;
+  const pad={t:8,r:6,b:20,l:6},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
+  const bw=Math.min(cW/(data.length*1.5),28),gap=(cW-bw*data.length)/(data.length+1);
+  data.forEach((d,i)=>{
+    const x=pad.l+gap+(bw+gap)*i,bh=(d/mx)*cH,last=i===data.length-1;
+    ctx.fillStyle=last?'#00D46A':'rgba(0,212,106,.28)';
+    ctx.beginPath();ctx.roundRect(x,pad.t+cH-bh,bw,bh,[3,3,2,2]);ctx.fill();
+    ctx.fillStyle=last?'rgba(255,255,255,.7)':'rgba(255,255,255,.3)';
+    ctx.font=(last?'600 ':'')+'10px DM Sans,system-ui';ctx.textAlign='center';ctx.fillText(lbls[i],x+bw/2,H-4);
+  });
+}
+
+/* ── Payout ── */
+function doPayout(){toast('Payout request submitted!');setTimeout(goBack,1100);}
+
+/* ── Logout ── */
+function doLogout(){online=false;goTo('sc-splash');setTimeout(()=>goTo('sc-login'),2400);}
+
+/* ── Map pulse ── */
+(function(){const r=document.getElementById('pulse-ring');if(!r)return;let v=16,g=true;setInterval(()=>{g?v+=.25:v-=.25;if(v>22)g=false;if(v<16)g=true;r.setAttribute('r',v);r.style.opacity=1-(v-16)/14;},25);})();
+
+/* ── Toast ── */
+function toast(msg){const t=document.createElement('div');t.className='toast';t.innerHTML='<i class="ti ti-circle-check"></i> '+msg;document.getElementById('phone').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},2600);}
+function toastErr(msg){const t=document.createElement('div');t.className='toast err';t.innerHTML='<i class="ti ti-x"></i> '+msg;document.getElementById('phone').appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},2500);}
+</script>
+</body>
+</html>
